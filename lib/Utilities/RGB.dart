@@ -9,7 +9,10 @@ class RGB {
       case 0: //k(0,0,0)
         color = Colors.black;
         liquid = Ingredient(
-            name: "blackLiquid", image: "", password: "black-7196", rgb: this);
+            name: "blackLiquid",
+            image: "Image/flask_erlenmeyer8_black.png",
+            password: "black-7196",
+            rgb: this);
         break;
       case 1: //R(1,0,0)
         color = Colors.red;
@@ -56,7 +59,10 @@ class RGB {
       case 7: //w(1,1,1)
         color = Colors.white;
         liquid = Ingredient(
-            name: "whiteLiquid", image: "", password: "white-1923", rgb: this);
+            name: "whiteLiquid",
+            image: "Image/flask_erlenmeyer1_white.png",
+            password: "white-1923",
+            rgb: this);
         break;
     }
   }

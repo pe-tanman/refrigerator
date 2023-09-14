@@ -60,14 +60,29 @@ class HomeScreenState extends State<HomeScreen> {
       name: "goldenEgg",
       image: "assets/Image/golden_egg.png",
       password: "egg-0123");
+  Ingredient goldenLiquid = Ingredient(
+      name: "goldenLiquid",
+      image: "assets/Image/golden_egg.png",
+      password: "liquid-0123");
   Ingredient greenLiquid = RGB(0, 1, 0).liquid;
   Ingredient yellowLiquid = RGB(1, 1, 0).liquid;
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
-  Tools mixer1 = Tools(capacity: 2, password: "mixer1-7213", actionName: "混合");
+  Ingredient blackLiquid = RGB(0, 0, 0).liquid;
+  Ingredient whiteLiquid = RGB(1, 1, 1).liquid;
+  Tools mixer1 =
+      Tools(capacity: [2], password: "mixer1-7213", actionName: "混合");
   Tools checker1 =
-      Tools(capacity: 1, password: "checker-1263", actionName: "割って確認");
+      Tools(capacity: [1], password: "checker-1263", actionName: "割って確認");
   Tools lightMixer =
-      Tools(capacity: 2, password: "lightMixer", actionName: "光の混合");
+      Tools(capacity: [2, 3], password: "lightMixer", actionName: "光の混合");
+  Tools lightSeparator =
+      Tools(capacity: [1], password: "lightSeparator", actionName: "光の分解");
+  Tools colorMixer =
+      Tools(capacity: [2, 3], password: "colorMixer", actionName: "色の混合");
+  Tools colorSeparator =
+      Tools(capacity: [1], password: "colorMixer", actionName: "色の分解");
+  Tools blackAndWhiteMixer =
+      Tools(capacity: [2], password: "mixer2-7113", actionName: "混合");
 
   @override
   void initState() {
@@ -110,14 +125,6 @@ class HomeScreenState extends State<HomeScreen> {
               completeObjectInventory,
               completeWidgetInventory,
               ShowClearDialog);
-          lightMixer.UseLightMixer(
-              context,
-              res,
-              objectInventory,
-              widgetInventory,
-              displayInventory,
-              completeObjectInventory,
-              completeWidgetInventory);
 
           if (objectInventory.length < 5 && isSuccessful) {
             showDialog(
@@ -165,10 +172,31 @@ class HomeScreenState extends State<HomeScreen> {
                 });
           }
           break;
+
         case 3:
           tomato.addToInventory(
               displayInventory, widgetInventory, objectInventory, res);
-          if (objectInventory.length < 5) {
+          lightMixer.UseLightMixer(
+              context, res, objectInventory, widgetInventory, displayInventory);
+          lightSeparator.UseLightSeparator(
+              context, res, objectInventory, widgetInventory, displayInventory);
+          colorMixer.UseColorMixer(
+              context, res, objectInventory, widgetInventory, displayInventory);
+          colorSeparator.UseColorSeparator(
+              context, res, objectInventory, widgetInventory, displayInventory);
+          blackAndWhiteMixer.UseMixer(
+              context,
+              res,
+              goldenLiquid,
+              [blackLiquid, whiteLiquid],
+              objectInventory,
+              widgetInventory,
+              displayInventory,
+              completeObjectInventory,
+              completeWidgetInventory,
+              ThirdClearDialog);
+
+          if (objectInventory.length <= 5) {
             showDialog(
                 context: context,
                 builder: (_) {
@@ -636,14 +664,10 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
-    if ((ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
-            .room !=
-        null) {
-      startRoom =
-          (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
-              .room;
-      room = startRoom;
-    }
+    startRoom =
+        (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
+            .room;
+    room = startRoom;
 
     return Scaffold(
       appBar: AppBar(

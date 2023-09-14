@@ -24,8 +24,8 @@ class StartScreen extends StatelessWidget {
               height: 100,
             ),
             Container(
-              width: 1000,
-              height: 580,
+              width: 800,
+              height: 300,
               decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("Image/title.jpg"), fit: BoxFit.cover)),

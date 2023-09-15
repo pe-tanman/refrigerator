@@ -10,7 +10,7 @@ class RGB {
         color = Colors.black;
         liquid = Ingredient(
             name: "blackLiquid",
-            image: "Image/flask_erlenmeyer8_black.png",
+            image: "assets/Image/flask_erlenmeyer8_black.png",
             password: "black-7196",
             rgb: this);
         break;
@@ -26,7 +26,7 @@ class RGB {
         color = Colors.green;
         liquid = Ingredient(
             name: "greenLiquid",
-            image: "Image/flask_erlenmeyer3_green.png",
+            image: "assets/Image/flask_erlenmeyer3_green.png",
             password: "green-7129",
             rgb: this);
         break;
@@ -39,7 +39,7 @@ class RGB {
         color = Colors.yellow;
         liquid = Ingredient(
             name: "yellowLiquid",
-            image: "Image/flask_erlenmeyer4_yellow.png",
+            image: "assets/Image/flask_erlenmeyer4_yellow.png",
             password: "yellow-7127",
             rgb: this);
         break;
@@ -60,7 +60,7 @@ class RGB {
         color = Colors.white;
         liquid = Ingredient(
             name: "whiteLiquid",
-            image: "Image/flask_erlenmeyer1_white.png",
+            image: "assets/Image/flask_erlenmeyer1_white.png",
             password: "white-1923",
             rgb: this);
         break;

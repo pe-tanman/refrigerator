@@ -8,7 +8,6 @@ import 'package:refrigerator/Utilities/ingredients.dart';
 import 'package:refrigerator/Utilities/tools.dart';
 import 'package:refrigerator/Utilities/RGB.dart';
 import "package:refrigerator/data/room_data.dart";
-import 'package:vector_math/vector_math.dart' hide Colors;
 
 class HomeScreenArguments {
   final int room;
@@ -26,12 +25,14 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   String result = '';
+  bool isInit = true;
   bool isCorrect = false;
   bool isSuccessful = false;
   bool hintAvailable = false;
+  bool canSend = false;
   int room = 1;
   int startRoom = 1;
-  String inventoryImgPath = "Image/inventory_tile.png";
+  String inventoryImgPath = "assets/Image/inventory_tile.png";
   String time = "2:00";
   List<Ingredient> objectInventory = [];
   List<Widget> widgetInventory = [];
@@ -45,6 +46,7 @@ class HomeScreenState extends State<HomeScreen> {
     ["4-1", "4-2", "4-3"]
   ];
   List<Widget> hintWidgets = [];
+  late ColorScheme colors;
 
   Ingredient egg = Ingredient(
       name: "egg", image: "assets/Image/egg_white.png", password: "egg-9753");
@@ -89,6 +91,7 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     StartTimer();
     MakeInventoryOutline();
+    canSend = (startRoom == 1);
   }
 
   Future<void> scanAndPick() async {
@@ -174,8 +177,16 @@ class HomeScreenState extends State<HomeScreen> {
           break;
 
         case 3:
-          tomato.addToInventory(
-              displayInventory, widgetInventory, objectInventory, res);
+          setState(() {
+            isSuccessful = egg.addToInventory(
+                displayInventory, widgetInventory, objectInventory, res);
+            isSuccessful = greenLiquid.addToInventory(
+                displayInventory, widgetInventory, objectInventory, res);
+            isSuccessful = yellowLiquid.addToInventory(
+                displayInventory, widgetInventory, objectInventory, res);
+            isSuccessful = redLiquid.addToInventory(
+                displayInventory, widgetInventory, objectInventory, res);
+          });
           lightMixer.UseLightMixer(
               context, res, objectInventory, widgetInventory, displayInventory);
           lightSeparator.UseLightSeparator(
@@ -196,12 +207,15 @@ class HomeScreenState extends State<HomeScreen> {
               completeWidgetInventory,
               ThirdClearDialog);
 
-          if (objectInventory.length <= 5) {
+          if (objectInventory.length <= 5 && isSuccessful) {
+            //受け取ったときの処理
+            canSend = true;
             showDialog(
                 context: context,
                 builder: (_) {
                   return PickedDialog();
                 });
+            isSuccessful = false;
           } else {
             showDialog(
                 context: context,
@@ -268,96 +282,215 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget TrashBoxDialog() {
+  Widget _buildTrashBoxButton() {
     List<int> selectedItems = [];
     List<int> tags = List.generate(objectInventory.length, (index) => index);
-
-    return StatefulBuilder(builder: (context, StateSetter setState) {
-      return AlertDialog(
-        title: const Text("消去するアイテムを選択"),
-        content: Wrap(
-          runSpacing: 16,
-          spacing: 16,
-          children: tags.map((tag) {
-            // selectedTags の中に自分がいるかを確かめる
-            bool isSelected = selectedItems.contains(tag);
-            return InkWell(
-              borderRadius: const BorderRadius.all(Radius.circular(32)),
-              onTap: () {
-                setState(() {
-                  if (isSelected) {
-                    // すでに選択されていれば取り除く
-                    selectedItems.remove(tag);
-                  } else {
-                    // 選択されていなければ追加する
-                    selectedItems.add(tag);
-                  }
-                  isSelected = selectedItems.contains(tag);
-                });
-                print(selectedItems);
-                print(isSelected);
-              },
-              child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(32)),
-                    border: Border.all(
-                      width: 2,
-                      color: isSelected ? Colors.lightBlue : Colors.white,
-                    ),
-                    color: isSelected ? Colors.lightBlue : null,
-                  ),
-                  child: widgetInventory[tag]),
-            );
-          }).toList(),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text("削除"),
-            onPressed: (selectedItems.isNotEmpty)
-                ? () {
-                    showDialog(
-                        context: context,
-                        builder: (_) {
-                          return AlertDialog(
-                              title: const Text("確認"),
-                              content: const Text("本当に削除してよろしいですか？"),
-                              actions: <Widget>[
-                                TextButton(
-                                    child: const Text("OK"),
-                                    onPressed: () {
-                                      for (int i in tags) {
-                                        objectInventory.removeAt(i);
-                                        widgetInventory.removeAt(i);
-                                        widgetInventory.add(Container(
-                                          width: 150,
-                                          height: 150,
-                                          decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                      inventoryImgPath),
-                                                  fit: BoxFit.cover)),
-                                        ));
-                                      }
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    }),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text("キャンセル"))
-                              ]);
+    return IconButton(
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("消去するアイテムを選択"),
+                content: Wrap(
+                  runSpacing: 16,
+                  spacing: 16,
+                  children: tags.map((tag) {
+                    // selectedTags の中に自分がいるかを確かめる
+                    bool isSelected = selectedItems.contains(tag);
+                    return InkWell(
+                      borderRadius: const BorderRadius.all(Radius.circular(32)),
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            // すでに選択されていれば取り除く
+                            selectedItems.remove(tag);
+                          } else {
+                            // 選択されていなければ追加する
+                            selectedItems.add(tag);
+                          }
+                          isSelected = selectedItems.contains(tag);
                         });
-                  }
-                : null,
-          )
-        ],
-      );
-    });
+                        print(selectedItems);
+                        print(isSelected);
+                      },
+                      child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(32)),
+                            border: Border.all(
+                              width: 2,
+                              color:
+                                  isSelected ? Colors.lightBlue : Colors.white,
+                            ),
+                            color: isSelected ? Colors.lightBlue : null,
+                          ),
+                          child: widgetInventory[tag]),
+                    );
+                  }).toList(),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("削除"),
+                    onPressed: (selectedItems.isNotEmpty)
+                        ? () {
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                      title: const Text("確認"),
+                                      content: const Text("本当に削除してよろしいですか？"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                            child: const Text("OK"),
+                                            onPressed: () {
+                                              for (int i in tags) {
+                                                objectInventory.removeAt(i);
+                                                widgetInventory.removeAt(i);
+                                                widgetInventory.add(Container(
+                                                  width: 150,
+                                                  height: 150,
+                                                  decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                          image: AssetImage(
+                                                              inventoryImgPath),
+                                                          fit: BoxFit.cover)),
+                                                ));
+                                              }
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            }),
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("キャンセル"))
+                                      ]);
+                                });
+                          }
+                        : null,
+                  )
+                ],
+              );
+            });
+      },
+      icon: const Icon(Icons.delete),
+      style: IconButton.styleFrom(
+        foregroundColor: colors.onPrimary,
+        backgroundColor: colors.primary,
+        disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
+        hoverColor: colors.onPrimary.withOpacity(0.08),
+        focusColor: colors.onPrimary.withOpacity(0.12),
+        highlightColor: colors.onPrimary.withOpacity(0.12),
+      ),
+    );
+  }
+
+  Widget _buildResetButton() {
+    return IconButton(
+      onPressed: () {
+        for (int i = 0; i <= 4; i++) {
+          displayInventory[i] = (Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+          ));
+        }
+        objectInventory.clear();
+        widgetInventory.clear();
+      },
+      icon: const Icon(Icons.close),
+      style: IconButton.styleFrom(
+        foregroundColor: colors.onPrimary,
+        backgroundColor: colors.primary,
+        disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
+        hoverColor: colors.onPrimary.withOpacity(0.08),
+        focusColor: colors.onPrimary.withOpacity(0.12),
+        highlightColor: colors.onPrimary.withOpacity(0.12),
+      ),
+    );
+  }
+
+  Widget _buildSendButton() {
+    return ElevatedButton.icon(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                    title: const Text("送信するアイテムを選択"),
+                    content: SizedBox(
+                      width: 400,
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        children: optionsToSend(),
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text("キャンセル"))
+                    ],
+                  ));
+        },
+        label: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("手渡す", style: TextStyle(fontSize: 25)),
+        ),
+        icon: const Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: Icon(Icons.send, size: 25),
+        ),
+        style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(40),
+        )));
+  }
+
+  Widget _buildHintButton() {
+    return ElevatedButton.icon(
+        onPressed: (hintAvailable)
+            ? () => showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                      title: const Text("確認"),
+                      content: const Text("ヒントを表示してよろしいですか？"),
+                      actions: [
+                        TextButton(
+                          child: const Text("OK"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                      title: const Text("ヒント"),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: hintWidgets,
+                                      ));
+                                });
+                          },
+                        ),
+                        TextButton(
+                          child: const Text("キャンセル"),
+                          onPressed: () => Navigator.of(context).pop(),
+                        )
+                      ]);
+                })
+            : null,
+        label: const Text(
+          "ヒント",
+        ),
+        icon: const Icon(
+          Icons.lightbulb,
+        ));
   }
 
   Widget PickedDialog() {
@@ -589,14 +722,27 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> InventoryOptions() {
+  List<Widget> optionsToSend() {
     List<Widget> result = [];
-    print(objectInventory);
-    int i = 0;
+
     for (int i = 0; i < objectInventory.length; i++) {
       result.add(IconButton(
         onPressed: () {
+          //send
+          canSend = false;
+
+          objectInventory.removeAt(i);
+          widgetInventory.removeAt(i);
+          displayInventory.removeAt(i);
+          displayInventory.add(Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+          ));
           Navigator.of(context).pop();
+          //QRcode表示
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -663,10 +809,14 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
+    colors = Theme.of(context).colorScheme;
     startRoom =
         (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
             .room;
+    if (isInit) {
+      room = startRoom;
+      isInit = false;
+    }
     room = startRoom;
 
     return Scaffold(
@@ -681,28 +831,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(width: 10),
-          Center(
-            child: ElevatedButton.icon(
-                onPressed: (hintAvailable)
-                    ? () => showDialog(
-                        context: context,
-                        builder: (_) {
-                          return AlertDialog(
-                              title: const Text("ヒント"),
-                              content: Column(
-                                children: hintWidgets,
-                                mainAxisSize: MainAxisSize.min,
-                              ));
-                        })
-                    : null,
-                label: Text(
-                  "ヒント",
-                  style: TextStyle(),
-                ),
-                icon: Icon(
-                  Icons.lightbulb,
-                )),
-          ),
+          Center(child: _buildHintButton()),
           const SizedBox(width: 20)
         ],
       ),
@@ -723,7 +852,7 @@ class HomeScreenState extends State<HomeScreen> {
                       child: Wrap(
                           runAlignment: WrapAlignment.center,
                           children: displayInventory)),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   SizedBox(
                       height: 180,
                       child: Wrap(
@@ -733,27 +862,11 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30), //角の丸み
+                  borderRadius: BorderRadius.circular(30),
                   color: Colors.lightBlue.shade300,
                 ),
-                child: IconButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return TrashBoxDialog();
-                        });
-                  },
-                  icon: const Icon(Icons.delete),
-                  style: IconButton.styleFrom(
-                    foregroundColor: colors.onPrimary,
-                    backgroundColor: colors.primary,
-                    disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
-                    hoverColor: colors.onPrimary.withOpacity(0.08),
-                    focusColor: colors.onPrimary.withOpacity(0.12),
-                    highlightColor: colors.onPrimary.withOpacity(0.12),
-                  ),
-                ),
+                child:
+                    (room == 3) ? _buildResetButton() : _buildTrashBoxButton(),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -779,40 +892,8 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
               Visibility(
-                visible: true, //TODO:need to be changed to "room == 3"
-                child: ElevatedButton.icon(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                                title: const Text("送信するアイテムを選択"),
-                                content: SizedBox(
-                                  width: 400,
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    children: InventoryOptions(),
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: const Text("キャンセル"))
-                                ],
-                              ));
-                    },
-                    label: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("手渡す", style: TextStyle(fontSize: 25)),
-                    ),
-                    icon: const Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: Icon(Icons.send, size: 25),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ))),
+                visible: room == 3,
+                child: _buildSendButton(),
               )
             ],
           ),

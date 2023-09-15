@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:refrigerator/Screen/home_screen.dart';
 import 'package:refrigerator/Widget/main_drawer.dart';
-import "/Widget/ending_drawer.dart";
 
 class StartScreen extends StatelessWidget {
-  static const routeName = "/ending-a-screen";
+  static const routeName = "/start-screen";
 
   StartScreen({
     super.key,
   });
-
-  final _viewTransformationController = TransformationController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,8 @@ class StartScreen extends StatelessWidget {
               height: 300,
               decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("Image/title.jpg"), fit: BoxFit.cover)),
+                      image: AssetImage("assets/Image/title.jpg"),
+                      fit: BoxFit.cover)),
             ),
             const SizedBox(
               height: 50,

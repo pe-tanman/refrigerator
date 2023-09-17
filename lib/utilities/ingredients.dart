@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "package:refrigerator/Utilities/RGB.dart";
+import "package:refrigerator/utilities/RGB.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:refrigerator/provider/tool_provider.dart";
 
@@ -8,14 +8,18 @@ class Ingredient {
       {required this.name,
       required this.image,
       required this.password,
-      this.rgb});
+      this.detail,
+      this.rgb}) {
+    detail ??= "";
+  }
 
   String name;
   String image;
   String password;
+  String? detail;
   RGB? rgb;
   final container = ProviderContainer();
-  String inventoryImgPath = "assets/Image/inventory_tile.png";
+  String inventoryImgPath = "assets/images/inventory_tile.png";
 
   bool addToInventory([String? ans]) {
     List<Widget> widgetInventory = container.read(widgetInventoryProvider);
@@ -25,7 +29,7 @@ class Ingredient {
     if ((ans == null || ans == password) &&
         !objectInventory.contains(this) &&
         objectInventory.length <= 5) {
-      String inventoryImgPath = "assets/Image/inventory_tile.png";
+      String inventoryImgPath = "assets/images/inventory_tile.png";
 
       displayInventory.insert(
           widgetInventory.length,

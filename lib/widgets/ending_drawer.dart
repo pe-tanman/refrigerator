@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/Screen/home_screen.dart';
+import '/screens/home_screen.dart';
 
 class EndingDrawer extends StatelessWidget {
   const EndingDrawer({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:flutter/material.dart";
-import 'package:refrigerator/Utilities/ingredients.dart';
+import 'package:refrigerator/utilities/ingredients.dart';
 
 class WidgetInventoryNotifier extends StateNotifier<List<Widget>> {
   WidgetInventoryNotifier() : super([]);

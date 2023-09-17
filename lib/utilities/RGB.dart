@@ -1,4 +1,4 @@
-import 'package:refrigerator/Utilities/ingredients.dart';
+import 'package:refrigerator/utilities/ingredients.dart';
 import 'package:flutter/material.dart';
 
 class RGB {
@@ -10,7 +10,7 @@ class RGB {
         color = Colors.black;
         liquid = Ingredient(
             name: "blackLiquid",
-            image: "assets/Image/flask_erlenmeyer8_black.png",
+            image: "assets/images/black_liquid.png",
             password: "black-7196",
             rgb: this);
         break;
@@ -18,7 +18,7 @@ class RGB {
         color = Colors.red;
         liquid = Ingredient(
             name: "redLiquid",
-            image: "Image/flask_erlenmeyer6_pink.png",
+            image: "assets/images/red_liquid.png",
             password: "red-5290",
             rgb: this);
         break;
@@ -26,20 +26,23 @@ class RGB {
         color = Colors.green;
         liquid = Ingredient(
             name: "greenLiquid",
-            image: "assets/Image/flask_erlenmeyer3_green.png",
+            image: "assets/images/green_liquid.png",
             password: "green-7129",
             rgb: this);
         break;
       case 4: //b(0,0,1)
         color = Colors.blue;
         liquid = Ingredient(
-            name: "blueLiquid", image: "", password: "blue-0975", rgb: this);
+            name: "blueLiquid",
+            image: "assets/images/blue_liquid.png",
+            password: "blue-0975",
+            rgb: this);
         break;
       case 3: //Y(1,1.0)
         color = Colors.yellow;
         liquid = Ingredient(
             name: "yellowLiquid",
-            image: "assets/Image/flask_erlenmeyer4_yellow.png",
+            image: "assets/images/yellow_liquid.png",
             password: "yellow-7127",
             rgb: this);
         break;
@@ -47,20 +50,23 @@ class RGB {
         color = Colors.pink;
         liquid = Ingredient(
             name: "magentaLiquid",
-            image: "",
+            image: "assets/images/magenta_liquid.png",
             password: "magenta-1237",
             rgb: this);
         break;
       case 6: //C(0,1,1)
         color = Colors.cyan;
         liquid = Ingredient(
-            name: "cyanLiquid", image: "", password: "cyan-1267", rgb: this);
+            name: "cyanLiquid",
+            image: "assets/images/cyan_liquid.png",
+            password: "cyan-1267",
+            rgb: this);
         break;
       case 7: //w(1,1,1)
         color = Colors.white;
         liquid = Ingredient(
             name: "whiteLiquid",
-            image: "assets/Image/flask_erlenmeyer1_white.png",
+            image: "assets/images/white_liquid.png",
             password: "white-1923",
             rgb: this);
         break;

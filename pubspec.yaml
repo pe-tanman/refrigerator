@@ -67,8 +67,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/Font/
-    - assets/Image/
+    - assets/fonts/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -84,15 +84,15 @@ flutter:
   fonts:
     - family: NotoSansJP
       fonts:
-        - asset: assets/Font/NotoSansJP-Light.ttf
+        - asset: assets/fonts/NotoSansJP-Light.ttf
           weight: 300
-        - asset: assets/Font/NotoSansJP-Regular.ttf
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
           weight: 400
-        - asset: assets/Font/NotoSansJP-Medium.ttf
+        - asset: assets/fonts/NotoSansJP-Medium.ttf
           weight: 500
-        - asset: assets/Font/NotoSansJP-Bold.ttf
+        - asset: assets/fonts/NotoSansJP-Bold.ttf
           weight: 700
-        - asset: assets/Font/NotoSansJP-Black.ttf
+        - asset: assets/fonts/NotoSansJP-Black.ttf
           weight: 900
 
   # For details regarding fonts from package dependencies,

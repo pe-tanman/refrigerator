@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:refrigerator/Screen/reference_screen.dart';
-
-import '/Screen/reference_screen.dart';
+import 'package:refrigerator/screens/reference_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -23,7 +21,7 @@ class MainDrawer extends StatelessWidget {
       ),
       Container(
         alignment: Alignment.bottomCenter,
-        child: Text("Copyright\n207 Ishihara Yuki",
+        child: const Text("Copyright\n207 Ishihara Yuki",
             style: TextStyle(fontSize: 10, color: Colors.grey)),
       )
     ]));

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:refrigerator/widgets/main_appbar.dart';
-import "/Screen/quit_screen.dart";
+import "/Screens/quit_screen.dart";
 import "package:refrigerator/data/room_data.dart";
 
 import 'package:refrigerator/widgets/main_drawer.dart';
@@ -14,7 +14,7 @@ class Room4bScreen extends StatefulWidget {
 
 class _Room4bScreenState extends State<Room4bScreen> {
   int room = 5;
-  String questionImgPath = "assets/Image/question.jpg";
+  String questionImgPath = "assets/images/question.jpg";
 
   void showFinishedDialog() {
     showDialog(

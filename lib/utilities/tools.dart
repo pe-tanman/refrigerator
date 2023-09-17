@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:refrigerator/Utilities/ingredients.dart';
+import 'package:refrigerator/utilities/ingredients.dart';
 import 'dart:math' as math;
-import 'package:refrigerator/Utilities/RGB.dart';
+import 'package:refrigerator/utilities/RGB.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:refrigerator/provider/tool_provider.dart";
 
@@ -10,12 +10,14 @@ class Tools {
   Tools(
       {required this.password,
       required this.capacity,
+      required this.image,
       required this.actionName});
 
   String password;
+  String image;
   List<int> capacity;
   String actionName;
-  String inventoryImgPath = "assets/Image/inventory_tile.png";
+  String inventoryImgPath = "assets/images/inventory_tile.png";
   final container = ProviderContainer();
 
   void showSelectItemsDialog(String ans, Function onSelected,
@@ -37,46 +39,54 @@ class Tools {
             return StatefulBuilder(builder: (context, StateSetter setState) {
               return AlertDialog(
                 title: Text("$actionNameするアイテムを選択"),
-                content: Wrap(
-                  runSpacing: 16,
-                  spacing: 16,
-                  children: tags.map((tag) {
-                    // selectedTags の中に自分がいるかを確かめる
-                    bool isSelected = selectedItems.contains(tag);
-                    return InkWell(
-                      borderRadius: const BorderRadius.all(Radius.circular(32)),
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            // すでに選択されていれば取り除く
-                            selectedItems.remove(tag);
-                          } else {
-                            // 選択されていなければ追加する
-                            selectedItems.add(tag);
-                          }
-                          isSelected = selectedItems.contains(tag);
-                        });
-                      },
-                      child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
+                content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(image),
+                      Wrap(
+                        runSpacing: 16,
+                        spacing: 16,
+                        children: tags.map((tag) {
+                          // selectedTags の中に自分がいるかを確かめる
+                          bool isSelected = selectedItems.contains(tag);
+                          return InkWell(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(32)),
-                            border: Border.all(
-                              width: 2,
-                              color:
-                                  isSelected ? Colors.lightBlue : Colors.white,
-                            ),
-                            color: isSelected ? Colors.lightBlue : null,
-                          ),
-                          child: (widgetInventory.isNotEmpty)
-                              ? widgetInventory[tag]
-                              : Container()),
-                    );
-                  }).toList(),
-                ),
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  // すでに選択されていれば取り除く
+                                  selectedItems.remove(tag);
+                                } else {
+                                  // 選択されていなければ追加する
+                                  selectedItems.add(tag);
+                                }
+                                isSelected = selectedItems.contains(tag);
+                              });
+                            },
+                            child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(32)),
+                                  border: Border.all(
+                                    width: 2,
+                                    color: isSelected
+                                        ? Colors.lightBlue
+                                        : Colors.white,
+                                  ),
+                                  color: isSelected ? Colors.lightBlue : null,
+                                ),
+                                child: (widgetInventory.isNotEmpty)
+                                    ? widgetInventory[tag]
+                                    : Container()),
+                          );
+                        }).toList(),
+                      ),
+                    ]),
                 actions: <Widget>[
                   TextButton(
                     onPressed: (capacity.contains(selectedItems.length))

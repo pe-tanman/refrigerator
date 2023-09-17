@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:refrigerator/Screen/home_screen.dart';
+import 'package:refrigerator/screens/home_screen.dart';
 import 'package:refrigerator/widgets/main_drawer.dart';
 
 class StartScreen extends StatelessWidget {
@@ -25,7 +25,7 @@ class StartScreen extends StatelessWidget {
               height: 300,
               decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("assets/Image/title.jpg"),
+                      image: AssetImage("assets/images/title.jpg"),
                       fit: BoxFit.cover)),
             ),
             const SizedBox(

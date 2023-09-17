@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:refrigerator/Screen/room4b_screen.dart';
+import 'package:refrigerator/screens/room4b_screen.dart';
 import 'package:refrigerator/provider/tool_provider.dart';
 import 'package:refrigerator/widgets/main_appbar.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:refrigerator/widgets/main_drawer.dart';
-import 'package:refrigerator/Utilities/ingredients.dart';
-import 'package:refrigerator/Utilities/tools.dart';
-import 'package:refrigerator/Utilities/RGB.dart';
+import 'package:refrigerator/utilities/ingredients.dart';
+import 'package:refrigerator/utilities/tools.dart';
+import 'package:refrigerator/utilities/RGB.dart';
 import "package:refrigerator/data/room_data.dart";
 
 class HomeScreenArguments {
@@ -33,7 +33,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   bool canSend = false;
   int room = 1;
   int startRoom = 1;
-  String inventoryImgPath = "assets/Image/inventory_tile.png";
+  String inventoryImgPath = "assets/images/inventory_tile.png";
   List<Ingredient> objectInventory = [];
   List<Widget> widgetInventory = [];
   List<Widget> displayInventory = [];
@@ -48,43 +48,109 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   late ColorScheme colors;
   String decision = ""; // a or b
 
-  Ingredient egg = Ingredient(
-      name: "egg", image: "assets/Image/egg_white.png", password: "egg-9753");
-  Ingredient tomato = Ingredient(
-      name: "tomato",
-      image: "assets/Image/tomato.png",
-      password: "tomato-5521");
+  //room1
+  Ingredient redEgg = Ingredient(
+      name: "赤の卵",
+      image: "assets/images/items/red_egg.png",
+      password: "red-egg");
+  Ingredient blueEgg = Ingredient(
+      name: "青の卵",
+      image: "assets/images/items/blue_egg.png",
+      password: "blue-egg");
+  Ingredient yellowEgg = Ingredient(
+      name: "黄色の卵",
+      image: "assets/images/items/yellow_egg.png",
+      password: "yellow-egg");
+  Ingredient brownEgg = Ingredient(
+      name: "茶色の卵",
+      image: "assets/images/items/brown_egg.png",
+      password: "brown-egg");
+  Ingredient purpleEgg = Ingredient(
+      name: "紫の卵",
+      image: "assets/images/items/purple_egg.png",
+      password: "purple-egg");
+  Ingredient greenEgg = Ingredient(
+      name: "緑の卵",
+      image: "assets/images/items/green_egg.png",
+      password: "green-egg");
+  Ingredient blackEgg = Ingredient(
+      name: "黒の卵",
+      image: "assets/images/items/black_egg.png",
+      password: "black-egg");
+  Ingredient correctCrashedEgg = Ingredient(
+      name: "輝く卵",
+      image: "assets/images/items/correct_crashed_egg.png",
+      password: "correct-egg-52");
+  Ingredient incorrectCrashedEgg = Ingredient(
+      name: "腐った卵",
+      image: "assets/images/items/incorrect_crashed_egg.png",
+      password: "incorrect-egg");
+  Tools checker1 = Tools(
+      capacity: [1],
+      password: "checker-1263",
+      image: "assets/images/tools/mixer.png",
+      actionName: "割って確認");
+  //room2
+  Tools mixer1 = Tools(
+      capacity: [3],
+      password: "mixer1-7213",
+      image: "assets/images/tools/mortar.png",
+      actionName: "混合");
   Ingredient goldenHimono = Ingredient(
       name: "goldenHimono",
-      image: "assets/Image/wasyoku_himono.png",
+      image: "assets/images/items/wasyoku_himono.png",
       password: "himono-0123");
-  Ingredient goldenEgg = Ingredient(
-      name: "goldenEgg",
-      image: "assets/Image/golden_egg.png",
-      password: "egg-0123");
+  Ingredient himono1 = Ingredient(
+      name: "himono1",
+      image: "assets/images/items/wasyoku_himono.png",
+      password: "himono-1111");
+  Ingredient himono2 = Ingredient(
+      name: "himono2",
+      image: "assets/images/items/wasyoku_himono.png",
+      password: "himono-2222");
+  Ingredient himono3 = Ingredient(
+      name: "himono3",
+      image: "assets/images/items/wasyoku_himono.png",
+      password: "himono-3333");
+//room3
   Ingredient goldenLiquid = Ingredient(
       name: "goldenLiquid",
-      image: "assets/Image/golden_egg.png",
+      image: "assets/images/monster.png",
       password: "liquid-0123");
-  Ingredient greenLiquid = RGB(0, 1, 0).liquid;
-  Ingredient yellowLiquid = RGB(1, 1, 0).liquid;
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
+  Ingredient greenLiquid = RGB(0, 1, 0).liquid;
+  Ingredient blueLiquid = RGB(0, 0, 1).liquid;
+  Ingredient yellowLiquid = RGB(1, 1, 0).liquid;
+  Ingredient magentaLiquid = RGB(1, 0, 1).liquid;
+  Ingredient cyanLiquid = RGB(0, 1, 1).liquid;
   Ingredient blackLiquid = RGB(0, 0, 0).liquid;
   Ingredient whiteLiquid = RGB(1, 1, 1).liquid;
-  Tools mixer1 =
-      Tools(capacity: [2], password: "mixer1-7213", actionName: "混合");
-  Tools checker1 =
-      Tools(capacity: [1], password: "checker-1263", actionName: "割って確認");
-  Tools lightMixer =
-      Tools(capacity: [2, 3], password: "lightMixer", actionName: "光の混合");
-  Tools lightSeparator =
-      Tools(capacity: [1], password: "lightSeparator", actionName: "光の分解");
-  Tools colorMixer =
-      Tools(capacity: [2, 3], password: "colorMixer", actionName: "色の混合");
-  Tools colorSeparator =
-      Tools(capacity: [1], password: "colorMixer", actionName: "色の分解");
-  Tools blackAndWhiteMixer =
-      Tools(capacity: [2], password: "mixer2-7113", actionName: "混合");
+
+  Tools lightMixer = Tools(
+      capacity: [2, 3],
+      password: "lightMixer",
+      image: "assets/images/tools/mixer.png",
+      actionName: "光の混合");
+  Tools lightSeparator = Tools(
+      capacity: [1],
+      password: "lightSeparator",
+      image: "assets/images/tools/mixer.png",
+      actionName: "光の分解");
+  Tools colorMixer = Tools(
+      capacity: [2, 3],
+      password: "colorMixer",
+      image: "assets/images/tools/mixer.png",
+      actionName: "色の混合");
+  Tools colorSeparator = Tools(
+      capacity: [1],
+      password: "colorMixer",
+      image: "assets/images/tools/mixer.png",
+      actionName: "色の分解");
+  Tools blackAndWhiteMixer = Tools(
+      capacity: [2],
+      password: "mixer2-7113",
+      image: "assets/images/tools/mixer.png",
+      actionName: "混合");
 
   @override
   void initState() {
@@ -115,13 +181,16 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       case 1:
         //インベントリ追加//TODO:egg1,2,3と追加する
         setState(() {
-          isSuccessful = egg.addToInventory(password);
-          isSuccessful = greenLiquid.addToInventory(password);
-          isSuccessful = yellowLiquid.addToInventory(password);
-          isSuccessful = redLiquid.addToInventory(password);
+          isSuccessful = redEgg.addToInventory(password);
+          isSuccessful = greenEgg.addToInventory(password);
+          isSuccessful = purpleEgg.addToInventory(password);
+          isSuccessful = yellowEgg.addToInventory(password);
+          isSuccessful = blackEgg.addToInventory(password);
+          isSuccessful = blueEgg.addToInventory(password);
+          isSuccessful = brownEgg.addToInventory(password);
         });
         checker1.showSelectItemsDialog(password, checker1.useCompleteMixer,
-            goldenEgg, [egg], showFirstClearDialog);
+            correctCrashedEgg, [yellowEgg], showFirstClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -133,10 +202,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
       case 2:
         setState(() {
-          isSuccessful = tomato.addToInventory(password);
+          isSuccessful = himono1.addToInventory(password);
+          isSuccessful = himono2.addToInventory(password);
+          isSuccessful = himono3.addToInventory(password);
         });
         mixer1.showSelectItemsDialog(password, mixer1.useCompleteMixer,
-            goldenHimono, [tomato], showSecondClearDialog);
+            goldenHimono, [himono1, himono2, himono3], showSecondClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -151,7 +222,13 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           isSuccessful = greenLiquid.addToInventory(password);
           isSuccessful = yellowLiquid.addToInventory(password);
           isSuccessful = redLiquid.addToInventory(password);
+          isSuccessful = blueLiquid.addToInventory(password);
+          isSuccessful = cyanLiquid.addToInventory(password);
+          isSuccessful = magentaLiquid.addToInventory(password);
+          isSuccessful = whiteLiquid.addToInventory(password);
+          isSuccessful = blackLiquid.addToInventory(password);
         });
+
         lightMixer.showSelectItemsDialog(password, lightMixer.useLightMixer);
         lightSeparator.showSelectItemsDialog(
             password, lightSeparator.useLightSeparator);
@@ -200,6 +277,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void showPickedDialog() {
+    int latestIndex = widgetInventory.length - 1;
     showDialog(
         context: context,
         builder: (_) {
@@ -213,7 +291,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(width: 200, height: 30),
-                  widgetInventory[widgetInventory.length - 1],
+                  widgetInventory[latestIndex],
+                  Text(objectInventory[latestIndex].detail!),
                 ],
               ),
             ),
@@ -413,15 +492,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           return AlertDialog(
             title: const Text("タマゴの部屋クリア!!",
                 style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: SizedBox(
+            content: const SizedBox(
               width: 200,
               height: 300,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  goldenEgg.inventoryTile(),
-                  const Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
-                ],
+                children: [Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")],
               ),
             ),
             actions: <Widget>[

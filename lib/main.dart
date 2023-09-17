@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:refrigerator/Screen/home_screen.dart';
-import 'package:refrigerator/Screen/start_screen.dart';
+import 'package:refrigerator/screens/home_screen.dart';
+import 'package:refrigerator/screens/start_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

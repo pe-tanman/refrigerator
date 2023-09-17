@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import "/Widget/ending_drawer.dart";
+import "/widgets/ending_drawer.dart";
 
 class EndingAScreen extends StatelessWidget {
   static const routeName = "/ending-a-screen";

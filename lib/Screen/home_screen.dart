@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:refrigerator/Screen/room4b_screen.dart';
+import 'package:refrigerator/widgets/main_appbar.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:refrigerator/Screen/endingA_screen.dart';
-import 'package:refrigerator/Screen/endingB_screen.dart';
-import 'package:refrigerator/Widget/main_drawer.dart';
+import 'package:refrigerator/widgets/main_drawer.dart';
 import 'package:refrigerator/Utilities/ingredients.dart';
 import 'package:refrigerator/Utilities/tools.dart';
 import 'package:refrigerator/Utilities/RGB.dart';
@@ -17,7 +17,7 @@ class HomeScreenArguments {
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
-  static const routeName = "/Home-screen";
+  static const routeName = "/home-screen";
 
   @override
   State<HomeScreen> createState() => HomeScreenState();
@@ -28,25 +28,18 @@ class HomeScreenState extends State<HomeScreen> {
   bool isInit = true;
   bool isCorrect = false;
   bool isSuccessful = false;
-  bool hintAvailable = false;
   bool canSend = false;
   int room = 1;
   int startRoom = 1;
   String inventoryImgPath = "assets/Image/inventory_tile.png";
-  String time = "2:00";
   List<Ingredient> objectInventory = [];
   List<Widget> widgetInventory = [];
   List<Widget> displayInventory = [];
   List<Ingredient> completeObjectInventory = [];
   List<Widget> completeWidgetInventory = [];
-  List<List<String>> HINTS = [
-    ["1-1", "1-2", "1-3"],
-    ["2-1", "2-2", "2-3"],
-    ["3-1", "3-2", "3-3"],
-    ["4-1", "4-2", "4-3"]
-  ];
-  List<Widget> hintWidgets = [];
+
   late ColorScheme colors;
+  String decision = ""; // a or b
 
   Ingredient egg = Ingredient(
       name: "egg", image: "assets/Image/egg_white.png", password: "egg-9753");
@@ -89,155 +82,121 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    StartTimer();
-    MakeInventoryOutline();
+    makeInventoryOutline();
     canSend = (startRoom == 1);
   }
 
-  Future<void> scanAndPick() async {
+  Future<String> scan() async {
     var res = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => const SimpleBarcodeScannerPage(),
         ));
 
-    if (res is String) {
-      result = res;
-      //クリア処理
-      switch (room) {
-        case 1:
-          //インベントリ追加//TODO:egg1,2,3と追加する
-          setState(() {
-            isSuccessful = egg.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = greenLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = yellowLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = redLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-          });
-          checker1.UseMixer(
-              context,
-              res,
-              goldenEgg,
-              [egg],
-              objectInventory,
-              widgetInventory,
-              displayInventory,
-              completeObjectInventory,
-              completeWidgetInventory,
-              ShowClearDialog);
+    return res as String;
+  }
 
-          if (objectInventory.length < 5 && isSuccessful) {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return PickedDialog();
-                });
-            isSuccessful = false;
-          } else if (objectInventory.length >= 5) {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return FailedPickDialog();
-                });
-          }
-          break;
+  void pick(String password) {
+    switch (room) {
+      case 1:
+        //インベントリ追加//TODO:egg1,2,3と追加する
+        setState(() {
+          isSuccessful = egg.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = greenLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = yellowLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = redLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+        });
+        checker1.useCompleteMixer(
+            context,
+            password,
+            goldenEgg,
+            [egg],
+            objectInventory,
+            widgetInventory,
+            displayInventory,
+            completeObjectInventory,
+            completeWidgetInventory,
+            showFirstClearDialog);
 
-        case 2:
-          mixer1.UseMixer(
-              context,
-              res,
-              goldenHimono,
-              [tomato, egg],
-              objectInventory,
-              widgetInventory,
-              displayInventory,
-              completeObjectInventory,
-              completeWidgetInventory,
-              ShowClearDialog);
-          isSuccessful = tomato.addToInventory(
-              displayInventory, widgetInventory, objectInventory, res);
+        if (objectInventory.length < 5 && isSuccessful) {
+          showPickedDialog();
+          isSuccessful = false;
+        } else if (objectInventory.length >= 5) {
+          showPickFailedDialog();
+        }
+        break;
 
-          if (objectInventory.length < 5 && isSuccessful) {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return PickedDialog();
-                });
-            isSuccessful = false;
-          } else if (objectInventory.length >= 5) {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return FailedPickDialog();
-                });
-          }
-          break;
+      case 2:
+        mixer1.useCompleteMixer(
+            context,
+            password,
+            goldenHimono,
+            [tomato, egg],
+            objectInventory,
+            widgetInventory,
+            displayInventory,
+            completeObjectInventory,
+            completeWidgetInventory,
+            showSecondClearDialog);
+        isSuccessful = tomato.addToInventory(
+            displayInventory, widgetInventory, objectInventory, password);
 
-        case 3:
-          setState(() {
-            isSuccessful = egg.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = greenLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = yellowLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-            isSuccessful = redLiquid.addToInventory(
-                displayInventory, widgetInventory, objectInventory, res);
-          });
-          lightMixer.UseLightMixer(
-              context, res, objectInventory, widgetInventory, displayInventory);
-          lightSeparator.UseLightSeparator(
-              context, res, objectInventory, widgetInventory, displayInventory);
-          colorMixer.UseColorMixer(
-              context, res, objectInventory, widgetInventory, displayInventory);
-          colorSeparator.UseColorSeparator(
-              context, res, objectInventory, widgetInventory, displayInventory);
-          blackAndWhiteMixer.UseMixer(
-              context,
-              res,
-              goldenLiquid,
-              [blackLiquid, whiteLiquid],
-              objectInventory,
-              widgetInventory,
-              displayInventory,
-              completeObjectInventory,
-              completeWidgetInventory,
-              ThirdClearDialog);
+        if (objectInventory.length < 5 && isSuccessful) {
+          showPickedDialog();
+          isSuccessful = false;
+        } else if (objectInventory.length >= 5) {
+          showPickFailedDialog();
+        }
+        break;
 
-          if (objectInventory.length <= 5 && isSuccessful) {
-            //受け取ったときの処理
-            canSend = true;
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return PickedDialog();
-                });
-            isSuccessful = false;
-          } else {
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return FailedPickDialog();
-                });
-          }
-          break;
-        case 4:
-          showDialog(
-              context: context,
-              builder: (_) {
-                return ForthClearDialog();
-              });
-          break;
-        default:
-          print("error");
-      }
+      case 3:
+        setState(() {
+          isSuccessful = egg.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = greenLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = yellowLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = redLiquid.addToInventory(
+              displayInventory, widgetInventory, objectInventory, password);
+        });
+        lightMixer.UseLightMixer(context, password, objectInventory,
+            widgetInventory, displayInventory);
+        lightSeparator.UseLightSeparator(context, password, objectInventory,
+            widgetInventory, displayInventory);
+        colorMixer.UseColorMixer(context, password, objectInventory,
+            widgetInventory, displayInventory);
+        colorSeparator.UseColorSeparator(context, password, objectInventory,
+            widgetInventory, displayInventory);
+        blackAndWhiteMixer.useCompleteMixer(
+            context,
+            password,
+            goldenLiquid,
+            [blackLiquid, whiteLiquid],
+            objectInventory,
+            widgetInventory,
+            displayInventory,
+            completeObjectInventory,
+            completeWidgetInventory,
+            showThirdClearDialog);
+
+        if (objectInventory.length <= 5 && isSuccessful) {
+          //受け取ったときの処理
+          canSend = true;
+          showPickedDialog();
+          isSuccessful = false;
+        } else {
+          showPickFailedDialog();
+        }
+        break;
     }
   }
 
-  void MakeInventoryOutline() {
+  void makeInventoryOutline() {
     setState(() {
       for (int i = 0; i <= 4; i++) {
         displayInventory.add(Container(
@@ -258,28 +217,60 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget FailedPickDialog() {
-    return AlertDialog(
-      title: const Text("MISS",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: const SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: 200, height: 30),
-            Text("インベントリが満タンか、正しくない食材を手に取りました。"),
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("OK"),
-            onPressed: () => Navigator.of(context).pop()),
-      ],
-    );
+  void showPickedDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("GET",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 200, height: 30),
+                  widgetInventory[widgetInventory.length - 1],
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("OK"),
+                  onPressed: () => Navigator.of(context).pop()),
+            ],
+          );
+        });
+  }
+
+  void showPickFailedDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("MISS",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: const SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 200, height: 30),
+                  Text("インベントリが満タンか、正しくない食材を手に取りました。"),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("OK"),
+                  onPressed: () => Navigator.of(context).pop()),
+            ],
+          );
+        });
   }
 
   Widget _buildTrashBoxButton() {
@@ -311,8 +302,6 @@ class HomeScreenState extends State<HomeScreen> {
                           }
                           isSelected = selectedItems.contains(tag);
                         });
-                        print(selectedItems);
-                        print(isSelected);
                       },
                       child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -334,7 +323,6 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
                 actions: <Widget>[
                   TextButton(
-                    child: const Text("削除"),
                     onPressed: (selectedItems.isNotEmpty)
                         ? () {
                             showDialog(
@@ -373,6 +361,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 });
                           }
                         : null,
+                    child: const Text("削除"),
                   )
                 ],
               );
@@ -452,274 +441,121 @@ class HomeScreenState extends State<HomeScreen> {
         )));
   }
 
-  Widget _buildHintButton() {
-    return ElevatedButton.icon(
-        onPressed: (hintAvailable)
-            ? () => showDialog(
-                context: context,
-                builder: (_) {
-                  return AlertDialog(
-                      title: const Text("確認"),
-                      content: const Text("ヒントを表示してよろしいですか？"),
-                      actions: [
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return AlertDialog(
-                                      title: const Text("ヒント"),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: hintWidgets,
-                                      ));
-                                });
-                          },
-                        ),
-                        TextButton(
-                          child: const Text("キャンセル"),
-                          onPressed: () => Navigator.of(context).pop(),
-                        )
-                      ]);
-                })
-            : null,
-        label: const Text(
-          "ヒント",
-        ),
-        icon: const Icon(
-          Icons.lightbulb,
-        ));
-  }
-
-  Widget PickedDialog() {
-    return AlertDialog(
-      title: const Text("GET",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(width: 200, height: 30),
-            widgetInventory[widgetInventory.length - 1],
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("OK"),
-            onPressed: () => Navigator.of(context).pop()),
-      ],
-    );
-  }
-
-  void ShowClearDialog() {
-    switch (room) {
-      case 1:
-        if (completeObjectInventory.contains(goldenEgg)) {
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (_) {
-                return FirstClearDialog();
-              });
-        }
-        break;
-      case 2:
-        if (completeObjectInventory.contains(goldenHimono)) {
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (_) {
-                return SecondClearDialog();
-              });
-        }
-        break;
-      //case3,4も追加
-      default:
-        break;
-    }
-  }
-
 //クリア時のポップアップ
-  Widget FirstClearDialog() {
-    return AlertDialog(
-      title: const Text("タマゴの部屋クリア!!",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            goldenEgg.inventoryTile(),
-            const Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("次へ"),
-            onPressed: () {
-              setState(() {
-                room = 2;
-                hintWidgets = [];
-                hintAvailable = false;
-                StartTimer();
-              });
-              StartTimer();
-              Navigator.of(context).pop();
-            })
-      ],
-    );
+  void showFirstClearDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("タマゴの部屋クリア!!",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  goldenEgg.inventoryTile(),
+                  const Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("次へ"),
+                  onPressed: () {
+                    setState(() {
+                      room = 2;
+                    });
+                    Navigator.of(context).pop();
+                  })
+            ],
+          );
+        });
   }
 
-  Widget SecondClearDialog() {
-    return AlertDialog(
-      title: const Text("野菜室クリア!!",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: const SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("この先は二組に分かれて進んでください",
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-            Text("どちらか片方の端末ではA、もう一方ではBを選択してください。"),
-            Text("注意:同じ部屋を選択しないでください\n絶対にこの部屋へ戻らないでください。")
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("Aへ進む"),
-            onPressed: () {
-              setState(() {
-                room = 3;
-                hintAvailable = false;
-                hintWidgets = [];
-                StartTimer();
-              });
-              StartTimer();
-              Navigator.of(context).pop();
-            }),
-        TextButton(
-            child: const Text("Bへ進む"),
-            onPressed: () {
-              setState(() {
-                room = 3;
-                hintAvailable = false;
-                hintWidgets = [];
-                StartTimer();
-              });
-              StartTimer();
-              Navigator.of(context).pop();
-            })
-      ],
-    );
+  void showSecondClearDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("野菜室クリア!!",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: const SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("この先は二組に分かれて進んでください",
+                      style:
+                          TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
+                  Text("こびとAはAの部屋へ、こびとBはBの部屋へ進んでください"),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("Aへ進む"),
+                  onPressed: () {
+                    setState(() {
+                      room = 3;
+                    });
+                    Navigator.of(context).pop();
+                  }),
+              TextButton(
+                  child: const Text("Bへ進む"),
+                  onPressed: () {
+                    setState(() {
+                      room = 3;
+                    });
+                    Navigator.of(context).pop();
+                  })
+            ],
+          );
+        });
   }
 
-  Widget ThirdClearDialog() {
-    return AlertDialog(
-      title: const Text("調理室クリア!!",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: const SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("もう一方の部屋にいる仲間に次の部屋へ進むよう指示してください。"),
-            Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("次へ"),
-            onPressed: () {
-              setState(() {
-                room = 4;
-                hintAvailable = false;
-                hintWidgets = [];
-                StartTimer();
-              });
-              StartTimer();
-              Navigator.of(context).pop();
-            }),
-      ],
-    );
+  void showThirdClearDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("調理室クリア!!",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: const SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("もう一方の部屋にいる仲間に次の部屋へ進むよう指示してください。"),
+                  Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("次へ"),
+                  onPressed: () {
+                    setState(() {
+                      room = 4;
+                    });
+                    Navigator.of(context).pop();
+                    showReadStoryDialog();
+                  }),
+            ],
+          );
+        });
   }
 
-  Widget ForthClearDialog() {
-    return AlertDialog(
-      title: const Text("先駆者のメモロードクリア!!",
-          style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-      content: const SizedBox(
-        width: 200,
-        height: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("この選択によってあなたともう一方の小人たちの命が決まる",
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-            Text("A, Bのどちらかを選択してください。"),
-            Text("注意:選択し直すことはできません\n絶対にこの部屋へ戻らないでください。")
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        // ボタン領域
-        TextButton(
-            child: const Text("Aへ進む"),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) {
-                    return AlertDialog(
-                      title: const Text("Aへ進んでください"),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      ],
-                    );
-                  });
-              Navigator.of(context).pushNamed(EndingAScreen.routeName);
-            }),
-        TextButton(
-            child: const Text("Bへ進む"),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) {
-                    return AlertDialog(
-                      title: const Text("Bへ進んでください"),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      ],
-                    );
-                  });
-              Navigator.of(context).pushNamed(EndingBScreen.routeName);
-            })
-      ],
-    );
+  void onReadQuestionQR(String ans) {
+    if (ans == "moveToQuestion") {
+      Navigator.of(context).pushNamed(Room4bScreen.routeName);
+    }
   }
 
   List<Widget> optionsToSend() {
@@ -774,37 +610,66 @@ class HomeScreenState extends State<HomeScreen> {
     return result;
   }
 
-  void AddHint(int hintNum) {
-    hintAvailable = true;
-    String availableHint = HINTS[room - 1][hintNum - 1];
-    hintWidgets.add(Text(
-      "ヒント$hintNum:",
-      style: const TextStyle(fontWeight: FontWeight.w600),
-    ));
-    hintWidgets.add(Text(availableHint));
-    hintWidgets.add(const Divider());
+  void showReadStoryDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return AlertDialog(
+              title: const Text("指示"),
+              content: const Text("壁の新聞を読んでください"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showDecisionDialog();
+                    },
+                    child: const Text("終わった"))
+              ]);
+        });
   }
 
-  void scheduleRebuild() => setState(() {});
+  void showDecisionDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return AlertDialog(
+              title: const Text("選択"),
+              content: const Text("どちらのこびとを食材にしますか?"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showWaitDialog();
+                    },
+                    child: const Text("こびとA")),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showWaitDialog();
+                    },
+                    child: const Text("こびとB"))
+              ]);
+        });
+  }
 
-  Future StartTimer() async {
-    int STARTMIN = 1;
-    for (int i = 1; i <= 3; i++) {
-      for (int min = STARTMIN - 1; min >= 0; min--) {
-        for (int sec = 59; sec >= 0; sec--) {
-          if (mounted) {
-            setState(() {
-              time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
-            });
-          }
-
-          await Future.delayed(const Duration(seconds: 1));
-        }
-      }
-      print("hint$i open");
-      AddHint(i);
-    }
-    print("finish");
+  void showWaitDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+              title: const Text("次の部屋に進んでください"),
+              content: const Text("この鍵は相方の鍵と同じ番号で開けられます"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showDecisionDialog();
+                    },
+                    child: const Text("OK"))
+              ]);
+        });
   }
 
   @override
@@ -820,21 +685,7 @@ class HomeScreenState extends State<HomeScreen> {
     room = startRoom;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(RoomData.roomData(room)!.title),
-        actions: [
-          const Text("ヒント追加まで"),
-          Center(
-            child: Text(
-              time,
-              style: const TextStyle(fontSize: 25),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Center(child: _buildHintButton()),
-          const SizedBox(width: 20)
-        ],
-      ),
+      appBar: MainAppbar(room: room),
       drawer: const MainDrawer(),
       body: Container(
         decoration: BoxDecoration(
@@ -871,7 +722,7 @@ class HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: () {
-                  scanAndPick();
+                  scan().then((value) => pick(value));
                 },
                 icon: const Padding(
                   padding: EdgeInsets.only(left: 18.0),

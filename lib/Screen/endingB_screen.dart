@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:refrigerator/Widget/ending_drawer.dart';
+import 'package:refrigerator/widgets/ending_drawer.dart';
 
 class EndingBScreen extends StatelessWidget {
   static const routeName = "/ending-b-screen";

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:refrigerator/Screen/home_screen.dart';
-import 'package:refrigerator/Widget/main_drawer.dart';
+import 'package:refrigerator/widgets/main_drawer.dart';
 
 class StartScreen extends StatelessWidget {
   static const routeName = "/start-screen";

@@ -12,8 +12,12 @@ class RoomData {
       title: "干物の部屋", imgPath: "assets/Image/2neStage_background.png");
   static const RoomDetailData thirdRoom = RoomDetailData(
       title: "調理室", imgPath: "assets/Image/3rdStage_background.png");
-  static const RoomDetailData forthRoom = RoomDetailData(
+  static const RoomDetailData forthARoom = RoomDetailData(
       title: "細道", imgPath: "assets/Image/4thStage_background.png");
+  static const RoomDetailData forthBRoom = RoomDetailData(
+      title: "機械室", imgPath: "assets/Image/4thStage_background.png");
+  static const RoomDetailData endingRoom = RoomDetailData(
+      title: "主人の書斎", imgPath: "assets/Image/4thStage_background.png");
 
   static RoomDetailData? roomData(int room) {
     switch (room) {
@@ -24,7 +28,12 @@ class RoomData {
       case 3:
         return thirdRoom;
       case 4:
-        return forthRoom;
+        return forthARoom;
+      case 5:
+        return forthBRoom;
+      case 6:
+        return endingRoom;
+
       default:
         return null;
     }

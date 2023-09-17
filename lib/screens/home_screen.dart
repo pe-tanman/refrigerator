@@ -191,16 +191,18 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       case 1:
         //インベントリ追加//TODO:egg1,2,3と追加する
         setState(() {
-          isSuccessful = redEgg.addToInventory(password);
-          isSuccessful = greenEgg.addToInventory(password);
-          isSuccessful = purpleEgg.addToInventory(password);
-          isSuccessful = yellowEgg.addToInventory(password);
-          isSuccessful = blackEgg.addToInventory(password);
-          isSuccessful = blueEgg.addToInventory(password);
-          isSuccessful = brownEgg.addToInventory(password);
+          isSuccessful = redEgg.addToInventory(ref, password);
+          isSuccessful = greenEgg.addToInventory(ref, password);
+          isSuccessful = purpleEgg.addToInventory(ref, password);
+          isSuccessful = yellowEgg.addToInventory(ref, password);
+          isSuccessful = blackEgg.addToInventory(ref, password);
+          isSuccessful = blueEgg.addToInventory(ref, password);
+          isSuccessful = brownEgg.addToInventory(ref, password);
         });
-        checker1.showSelectItemsDialog(password, checker1.useCompleteMixer,
-            correctCrashedEgg, [yellowEgg], showFirstClearDialog);
+        //test
+
+        checker1.showSelectItemsDialog(password, checker1.useCompleteMixer, ref,
+            correctCrashedEgg, [], [yellowEgg], showFirstClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -212,12 +214,18 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
       case 2:
         setState(() {
-          isSuccessful = himono1.addToInventory(password);
-          isSuccessful = himono2.addToInventory(password);
-          isSuccessful = himono3.addToInventory(password);
+          isSuccessful = himono1.addToInventory(ref, password);
+          isSuccessful = himono2.addToInventory(ref, password);
+          isSuccessful = himono3.addToInventory(ref, password);
         });
-        mixer1.showSelectItemsDialog(password, mixer1.useCompleteMixer,
-            goldenHimono, [himono1, himono2, himono3], showSecondClearDialog);
+        mixer1.showSelectItemsDialog(
+            password,
+            mixer1.useCompleteMixer,
+            ref,
+            goldenHimono,
+            [],
+            [himono1, himono2, himono3],
+            showSecondClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -229,27 +237,30 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
       case 3:
         setState(() {
-          isSuccessful = greenLiquid.addToInventory(password);
-          isSuccessful = yellowLiquid.addToInventory(password);
-          isSuccessful = redLiquid.addToInventory(password);
-          isSuccessful = blueLiquid.addToInventory(password);
-          isSuccessful = cyanLiquid.addToInventory(password);
-          isSuccessful = magentaLiquid.addToInventory(password);
-          isSuccessful = whiteLiquid.addToInventory(password);
-          isSuccessful = blackLiquid.addToInventory(password);
+          isSuccessful = greenLiquid.addToInventory(ref, password);
+          isSuccessful = yellowLiquid.addToInventory(ref, password);
+          isSuccessful = redLiquid.addToInventory(ref, password);
+          isSuccessful = blueLiquid.addToInventory(ref, password);
+          isSuccessful = cyanLiquid.addToInventory(ref, password);
+          isSuccessful = magentaLiquid.addToInventory(ref, password);
+          isSuccessful = whiteLiquid.addToInventory(ref, password);
+          isSuccessful = blackLiquid.addToInventory(ref, password);
         });
 
-        lightMixer.showSelectItemsDialog(password, lightMixer.useLightMixer);
+        lightMixer.showSelectItemsDialog(
+            password, lightMixer.useLightMixer, ref);
         lightSeparator.showSelectItemsDialog(
-            password, lightSeparator.useLightSeparator);
+            password, lightSeparator.useLightSeparator, ref);
         colorMixer.showSelectItemsDialog(
-            password, colorSeparator.useColorSeparator);
+            password, colorSeparator.useColorSeparator, ref);
         colorSeparator.showSelectItemsDialog(
-            password, colorMixer.useColorMixer);
+            password, colorMixer.useColorMixer, ref);
         blackAndWhiteMixer.showSelectItemsDialog(
             password,
             blackAndWhiteMixer.useCompleteMixer,
+            ref,
             goldenLiquid,
+            [],
             [blackLiquid, whiteLiquid],
             showThirdClearDialog);
 
@@ -266,24 +277,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void makeInventoryOutline() {
-    setState(() {
-      for (int i = 0; i <= 4; i++) {
-        displayInventoryNotifier.add(Container(
-          width: 180,
-          height: 180,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
-        ));
-        completeWidgetInventoryNotifier.add(Container(
-          width: 180,
-          height: 180,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
-        ));
-      }
-    });
+    for (int i = 0; i <= 4; i++) {
+      displayInventoryNotifier.add(Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+      ));
+      completeWidgetInventoryNotifier.add(Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+      ));
+    }
   }
 
   void showPickedDialog() {
@@ -762,13 +771,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       height: 180,
                       child: Wrap(
                           runAlignment: WrapAlignment.center,
-                          children: displayInventory)),
+                          children: ref.watch(displayInventoryProvider))),
                   const SizedBox(height: 10),
                   SizedBox(
                       height: 180,
                       child: Wrap(
                           runAlignment: WrapAlignment.center,
-                          children: completeWidgetInventory)),
+                          children:
+                              ref.watch(completeWidgetInventoryProvider))),
                 ],
               ),
               Container(

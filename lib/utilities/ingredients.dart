@@ -18,13 +18,15 @@ class Ingredient {
   String password;
   String? detail;
   RGB? rgb;
-  final container = ProviderContainer();
   String inventoryImgPath = "assets/images/inventory_tile.png";
 
-  bool addToInventory([String? ans]) {
-    List<Widget> widgetInventory = container.read(widgetInventoryProvider);
-    List<Widget> displayInventory = container.read(displayInventoryProvider);
-    List<Ingredient> objectInventory = container.read(objectInventoryProvider);
+  bool addToInventory(WidgetRef ref, [String? ans]) {
+    ref.read(displayInventoryProvider.notifier).add(Container());
+    List<Widget> displayInventory =
+        ref.read(displayInventoryProvider.notifier).get();
+    print(displayInventory);
+    List<Widget> widgetInventory = ref.read(widgetInventoryProvider);
+    List<Ingredient> objectInventory = ref.read(objectInventoryProvider);
 
     if ((ans == null || ans == password) &&
         !objectInventory.contains(this) &&
@@ -48,26 +50,21 @@ class Ingredient {
       objectInventory.add(this);
       displayInventory.removeAt(4);
 
-      container
-          .read(widgetInventoryProvider.notifier)
-          .updateList(widgetInventory);
-      container
-          .read(objectInventoryProvider.notifier)
-          .updateList(objectInventory);
-      container
-          .read(displayInventoryProvider.notifier)
-          .updateList(displayInventory);
+      ref.read(widgetInventoryProvider.notifier).updateList(widgetInventory);
+      ref.read(objectInventoryProvider.notifier).updateList(objectInventory);
+      ref.read(displayInventoryProvider.notifier).updateList(displayInventory);
+
       return true;
     } else {
       return false;
     }
   }
 
-  void addToCompleteInventory([String? ans]) {
+  void addToCompleteInventory(WidgetRef ref, [String? ans]) {
     List<Widget> completeWidgetInventory =
-        container.read(completeWidgetInventoryProvider);
+        ref.read(completeWidgetInventoryProvider);
     List<Ingredient> completeObjectInventory =
-        container.read(completeObjectInventoryProvider);
+        ref.read(completeObjectInventoryProvider);
     if ((ans == null || ans == password) &&
         !completeObjectInventory.contains(this) &&
         completeObjectInventory.length <= 5) {
@@ -81,10 +78,10 @@ class Ingredient {
         child: inventoryTile(),
       ));
       completeObjectInventory.add(this);
-      container
+      ref
           .read(completeWidgetInventoryProvider.notifier)
           .updateList(completeWidgetInventory);
-      container
+      ref
           .read(completeObjectInventoryProvider.notifier)
           .updateList(completeObjectInventory);
     }

@@ -18,18 +18,18 @@ class Tools {
   List<int> capacity;
   String actionName;
   String inventoryImgPath = "assets/images/inventory_tile.png";
-  final container = ProviderContainer();
 
-  void showSelectItemsDialog(String ans, Function onSelected,
+  void showSelectItemsDialog(String ans, Function onSelected, WidgetRef ref,
       [Ingredient? correctOutput,
+      List<Ingredient>? incorrectOutputs,
       List<Ingredient>? correctIngredients,
       Function? onPopupConfirmed]) {
     List<Ingredient> selectedIngredients = [];
     List<int> selectedItems = [];
-    List<Widget> widgetInventory = container.read(widgetInventoryProvider);
-    List<Ingredient> objectInventory = container.read(objectInventoryProvider);
-    List<Widget> displayInventory = container.read(displayInventoryProvider);
-    BuildContext? context = container.read(mainContextProvider);
+    List<Widget> widgetInventory = ref.watch(widgetInventoryProvider);
+    List<Ingredient> objectInventory = ref.read(objectInventoryProvider);
+    List<Widget> displayInventory = ref.read(displayInventoryProvider);
+    BuildContext? context = ref.read(mainContextProvider);
     List<int> tags = List.generate(widgetInventory.length, (index) => index);
 
     if (ans == password) {
@@ -110,16 +110,26 @@ class Tools {
                                         fit: BoxFit.cover)),
                               ));
                               //更新
-                              container
+                              ref
                                   .read(widgetInventoryProvider.notifier)
                                   .updateList(widgetInventory);
-                              container
+                              ref
                                   .read(objectInventoryProvider.notifier)
                                   .updateList(objectInventory);
-                              container
+                              ref
                                   .read(displayInventoryProvider.notifier)
                                   .updateList(displayInventory);
-                              onSelected(selectedIngredients);
+                              if (correctOutput != null) {
+                                onSelected(
+                                    correctOutput,
+                                    incorrectOutputs,
+                                    correctIngredients,
+                                    selectedIngredients,
+                                    onPopupConfirmed,
+                                    ref);
+                              } else {
+                                onSelected(selectedIngredients, ref);
+                              }
                             }
                           }
                         : null,
@@ -134,16 +144,18 @@ class Tools {
 
   void useCompleteMixer(
       Ingredient correctOutput,
+      List<Ingredient> incorrectOutputs,
       List<Ingredient> correctIngredients,
       List<Ingredient> selectedIngredients,
-      Function? onPopupConfirmed) {
+      Function? onPopupConfirmed,
+      WidgetRef ref) {
     //mix
     correctIngredients.sort(((a, b) => a.name.compareTo(b.name)));
     selectedIngredients.sort(((a, b) => a.name.compareTo(b.name)));
 
     //正解時
     if (listEquals(correctIngredients, selectedIngredients)) {
-      correctOutput.addToCompleteInventory();
+      correctOutput.addToCompleteInventory(ref);
 
       if (onPopupConfirmed != null) {
         onPopupConfirmed();
@@ -162,7 +174,7 @@ class Tools {
     }
   }
 
-  void useLightMixer(List<Ingredient> selectedIngredients) {
+  void useLightMixer(List<Ingredient> selectedIngredients, WidgetRef ref) {
     ///mix
     late Ingredient mixedLiquid;
     if (selectedIngredients.length == 2) {
@@ -172,7 +184,7 @@ class Tools {
         RGB rgb2 = selectedIngredients[1].rgb!;
         if (rgb1.sum == 1 && rgb2.sum == 1) {
           mixedLiquid = rgb1.mixLight(rgb2).liquid;
-          mixedLiquid.addToInventory();
+          mixedLiquid.addToInventory(ref);
         }
       } else {
         print("液体しか投入できません");
@@ -187,13 +199,13 @@ class Tools {
         RGB rgb3 = selectedIngredients[2].rgb!;
         if (rgb1.sum + rgb2.sum + rgb3.sum == 3) {
           mixedLiquid = RGB(1, 1, 1).liquid;
-          mixedLiquid.addToInventory();
+          mixedLiquid.addToInventory(ref);
         }
       }
     }
   }
 
-  void useLightSeparator(List<Ingredient> selectedIngredients) {
+  void useLightSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
     //separate
 
     if (selectedIngredients[0].rgb != null) {
@@ -201,13 +213,13 @@ class Tools {
         RGB rgb1 = selectedIngredients[0].rgb!;
         List<Ingredient> separatedLiquid = rgb1.separateLight();
         for (Ingredient liquid in separatedLiquid) {
-          liquid.addToInventory();
+          liquid.addToInventory(ref);
         }
       }
     }
   }
 
-  void useColorMixer(List<Ingredient> selectedIngredients) {
+  void useColorMixer(List<Ingredient> selectedIngredients, WidgetRef ref) {
     ///mix
     late Ingredient mixedLiquid;
 
@@ -219,7 +231,7 @@ class Tools {
         RGB rgb2 = selectedIngredients[1].rgb!;
 
         mixedLiquid = rgb1.mixLight(rgb2).liquid;
-        mixedLiquid.addToInventory();
+        mixedLiquid.addToInventory(ref);
       } else {
         print("液体しか投入できません");
       }
@@ -231,21 +243,21 @@ class Tools {
           selectedIngredients[1].rgb != null &&
           selectedIngredients[2].rgb != null) {
         mixedLiquid = RGB(0, 0, 0).liquid;
-        mixedLiquid.addToInventory();
+        mixedLiquid.addToInventory(ref);
       } else {
         print("液体しか投入できません");
       }
     }
   }
 
-  void useColorSeparator(List<Ingredient> selectedIngredients) {
+  void useColorSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
     ///separate
     if (selectedIngredients[0].rgb != null) {
       if (selectedIngredients[0].rgb!.sum == 1) {
         RGB rgb1 = selectedIngredients[0].rgb!;
         List<Ingredient> separatedLiquid = rgb1.separateColor();
         for (Ingredient liquid in separatedLiquid) {
-          liquid.addToInventory();
+          liquid.addToInventory(ref);
         }
       }
     }

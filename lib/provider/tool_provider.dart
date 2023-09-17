@@ -24,6 +24,10 @@ class WidgetInventoryNotifier extends StateNotifier<List<Widget>> {
   void updateList(List<Widget> list) {
     state = list;
   }
+
+  List<Widget> get() {
+    return state;
+  }
 }
 
 class ObjectInventoryNotifier extends StateNotifier<List<Ingredient>> {

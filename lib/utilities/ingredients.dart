@@ -18,20 +18,18 @@ class Ingredient {
   String password;
   String? detail;
   RGB? rgb;
-  String inventoryImgPath = "assets/images/inventory_tile.png";
+  String inventoryImgPath = "images/background/inventory_tile.png";
 
   bool addToInventory(WidgetRef ref, [String? ans]) {
-    ref.read(displayInventoryProvider.notifier).add(Container());
     List<Widget> displayInventory =
         ref.read(displayInventoryProvider.notifier).get();
-    print(displayInventory);
     List<Widget> widgetInventory = ref.read(widgetInventoryProvider);
     List<Ingredient> objectInventory = ref.read(objectInventoryProvider);
 
     if ((ans == null || ans == password) &&
         !objectInventory.contains(this) &&
         objectInventory.length <= 5) {
-      String inventoryImgPath = "assets/images/inventory_tile.png";
+      String inventoryImgPath = "images/background/inventory_tile.png";
 
       displayInventory.insert(
           widgetInventory.length,

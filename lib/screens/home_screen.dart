@@ -155,6 +155,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
+    super.initState();
     Future.delayed(Duration.zero, () {
       objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
       widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
@@ -173,7 +174,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       makeInventoryOutline();
       canSend = (startRoom == 1);
     });
-    super.initState();
   }
 
   Future<String> scan() async {
@@ -182,7 +182,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         MaterialPageRoute(
           builder: (context) => const SimpleBarcodeScannerPage(),
         ));
-
+    print(res as String);
     return res as String;
   }
 
@@ -293,9 +293,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
       ));
     }
+    setState(() {});
   }
 
   void showPickedDialog() {
+    setState(() {});
     int latestIndex = widgetInventory.length - 1;
     showDialog(
         context: context,
@@ -771,14 +773,13 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       height: 180,
                       child: Wrap(
                           runAlignment: WrapAlignment.center,
-                          children: ref.watch(displayInventoryProvider))),
+                          children: displayInventory)),
                   const SizedBox(height: 10),
                   SizedBox(
                       height: 180,
                       child: Wrap(
                           runAlignment: WrapAlignment.center,
-                          children:
-                              ref.watch(completeWidgetInventoryProvider))),
+                          children: completeWidgetInventory)),
                 ],
               ),
               Container(

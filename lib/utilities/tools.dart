@@ -17,7 +17,7 @@ class Tools {
   String image;
   List<int> capacity;
   String actionName;
-  String inventoryImgPath = "assets/images/inventory_tile.png";
+  String inventoryImgPath = "images/background/inventory_tile.png";
 
   void showSelectItemsDialog(String ans, Function onSelected, WidgetRef ref,
       [Ingredient? correctOutput,

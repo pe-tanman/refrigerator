@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:refrigerator/Utilities/RGB.dart";
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "package:refrigerator/provider/tool_provider.dart";
 
 class Ingredient {
   Ingredient(
@@ -12,6 +14,7 @@ class Ingredient {
   String image;
   String password;
   RGB? rgb;
+  final container = ProviderContainer();
 
   bool addToInventory(List<Widget> displayInventory,
       List<Widget> widgetInventory, List<Ingredient> objectInventory,

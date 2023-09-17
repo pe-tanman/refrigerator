@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/screens/home_screen.dart';
+import 'package:refrigerator/screens/start_screen.dart';
 
 class EndingDrawer extends StatelessWidget {
   const EndingDrawer({super.key});
@@ -17,7 +17,7 @@ class EndingDrawer extends StatelessWidget {
       ),
       ListTile(
         title: const Text("初期化", style: TextStyle(fontSize: 20)),
-        onTap: () => Navigator.of(context).pushNamed(HomeScreen.routeName),
+        onTap: () => Navigator.of(context).pushNamed(StartScreen.routeName),
       ),
       Container(
         alignment: Alignment.bottomCenter,

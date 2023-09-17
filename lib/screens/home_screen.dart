@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:refrigerator/screens/room4b_screen.dart';
+import 'package:refrigerator/screens/ending_screen.dart';
 import 'package:refrigerator/provider/tool_provider.dart';
 import 'package:refrigerator/widgets/main_appbar.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
@@ -33,7 +34,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   bool canSend = false;
   int room = 1;
   int startRoom = 1;
-  String inventoryImgPath = "assets/images/inventory_tile.png";
+  String inventoryImgPath = "images/background/inventory_tile.png";
   List<Ingredient> objectInventory = [];
   List<Widget> widgetInventory = [];
   List<Widget> displayInventory = [];
@@ -154,16 +155,25 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
-    objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
-    widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
-    displayInventoryNotifier = ref.watch(displayInventoryProvider.notifier);
-    completeObjectInventoryNotifier =
-        ref.watch(completeObjectInventoryProvider.notifier);
-    completeWidgetInventoryNotifier =
-        ref.watch(completeWidgetInventoryProvider.notifier);
+    Future.delayed(Duration.zero, () {
+      objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
+      widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
+      displayInventoryNotifier = ref.watch(displayInventoryProvider.notifier);
+      completeObjectInventoryNotifier =
+          ref.watch(completeObjectInventoryProvider.notifier);
+      completeWidgetInventoryNotifier =
+          ref.watch(completeWidgetInventoryProvider.notifier);
+
+      objectInventory = ref.watch(objectInventoryProvider);
+      widgetInventory = ref.watch(widgetInventoryProvider);
+      displayInventory = ref.watch(displayInventoryProvider);
+      completeWidgetInventory = ref.watch(completeWidgetInventoryProvider);
+      completeObjectInventory = ref.watch(completeObjectInventoryProvider);
+
+      makeInventoryOutline();
+      canSend = (startRoom == 1);
+    });
     super.initState();
-    makeInventoryOutline();
-    canSend = (startRoom == 1);
   }
 
   Future<String> scan() async {
@@ -592,12 +602,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         });
   }
 
-  void onReadQuestionQR(String ans) {
-    if (ans == "moveToQuestion") {
-      Navigator.of(context).pushNamed(Room4bScreen.routeName);
-    }
-  }
-
   List<Widget> optionsToSend() {
     List<Widget> result = [];
 
@@ -650,6 +654,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     return result;
   }
 
+//room4a
   void showReadStoryDialog() {
     showDialog(
         context: context,
@@ -682,12 +687,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       showWaitDialog();
+                      decision = "a";
                     },
                     child: const Text("こびとA")),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                       showWaitDialog();
+                      decision = "b";
                     },
                     child: const Text("こびとB"))
               ]);
@@ -700,7 +707,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         builder: (_) {
           return AlertDialog(
               title: const Text("次の部屋に進んでください"),
-              content: const Text("この鍵は相方の鍵と同じ番号で開けられます"),
+              content: const Text("南京錠は相方の鍵と同じ番号で開けられます"),
               actions: [
                 TextButton(
                     onPressed: () {
@@ -712,14 +719,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         });
   }
 
+  void onReadEndingQR(String ans) {
+    if (ans == "moveToQuestion") {
+      Navigator.of(context)
+          .pushNamed(EndingScreen.routeName, arguments: decision);
+    }
+  }
+
+  //room4b
+  void onReadQuestionQR(String ans) {
+    if (ans == "moveToQuestion") {
+      Navigator.of(context).pushNamed(Room4bScreen.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    objectInventory = ref.watch(objectInventoryProvider);
-    widgetInventory = ref.watch(widgetInventoryProvider);
-    displayInventory = ref.watch(displayInventoryProvider);
-    completeWidgetInventory = ref.watch(completeWidgetInventoryProvider);
-    completeObjectInventory = ref.watch(completeObjectInventoryProvider);
-
     colors = Theme.of(context).colorScheme;
     startRoom =
         (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
@@ -728,7 +743,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       room = startRoom;
       isInit = false;
     }
-    room = startRoom;
 
     return Scaffold(
       appBar: MainAppbar(room: room),

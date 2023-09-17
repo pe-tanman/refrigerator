@@ -7,17 +7,21 @@ class RoomDetailData {
 
 class RoomData {
   static const RoomDetailData firstRoom = RoomDetailData(
-      title: "タマゴの部屋", imgPath: "assets/images/1stStage_background.png");
+      title: "タマゴの部屋", imgPath: "images/background/1stStage_background.png");
   static const RoomDetailData secondRoom = RoomDetailData(
-      title: "干物の部屋", imgPath: "assets/images/2neStage_background.png");
+      title: "干物の部屋",
+      imgPath: "assets/images/background/2ndStage_background.png");
   static const RoomDetailData thirdRoom = RoomDetailData(
-      title: "調理室", imgPath: "assets/images/3rdStage_background.png");
+      title: "調理室",
+      imgPath: "assets/images/background/3rdStage_background.png");
   static const RoomDetailData forthARoom = RoomDetailData(
-      title: "細道", imgPath: "assets/images/4thStage_background.png");
+      title: "細道", imgPath: "assets/images/background/4thStage_background.png");
   static const RoomDetailData forthBRoom = RoomDetailData(
-      title: "機械室", imgPath: "assets/images/4thStage_background.png");
+      title: "機械室",
+      imgPath: "assets/images/background/4thStage_background.png");
   static const RoomDetailData endingRoom = RoomDetailData(
-      title: "主人の書斎", imgPath: "assets/images/4thStage_background.png");
+      title: "主人の書斎",
+      imgPath: "assets/images/background4thStage_background.png");
 
   static RoomDetailData? roomData(int room) {
     switch (room) {

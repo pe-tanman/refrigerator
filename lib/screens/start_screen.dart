@@ -18,25 +18,25 @@ class StartScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(
-              height: 100,
+              height: 50,
             ),
             Container(
-              width: 800,
-              height: 300,
+              width: 853.5,
+              height: 480,
               decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("assets/images/title.jpg"),
                       fit: BoxFit.cover)),
             ),
             const SizedBox(
-              height: 50,
+              height: 30,
             ),
             const Text(
               "それぞれ別のプレイヤーを選択してください",
               style: TextStyle(fontSize: 30),
             ),
             const SizedBox(
-              height: 50,
+              height: 30,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

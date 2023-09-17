@@ -15,10 +15,13 @@ class Ingredient {
   String password;
   RGB? rgb;
   final container = ProviderContainer();
+  String inventoryImgPath = "assets/Image/inventory_tile.png";
 
-  bool addToInventory(List<Widget> displayInventory,
-      List<Widget> widgetInventory, List<Ingredient> objectInventory,
-      [String? ans]) {
+  bool addToInventory([String? ans]) {
+    List<Widget> widgetInventory = container.read(widgetInventoryProvider);
+    List<Widget> displayInventory = container.read(displayInventoryProvider);
+    List<Ingredient> objectInventory = container.read(objectInventoryProvider);
+
     if ((ans == null || ans == password) &&
         !objectInventory.contains(this) &&
         objectInventory.length <= 5) {
@@ -41,20 +44,45 @@ class Ingredient {
       objectInventory.add(this);
       displayInventory.removeAt(4);
 
+      container
+          .read(widgetInventoryProvider.notifier)
+          .updateList(widgetInventory);
+      container
+          .read(objectInventoryProvider.notifier)
+          .updateList(objectInventory);
+      container
+          .read(displayInventoryProvider.notifier)
+          .updateList(displayInventory);
       return true;
     } else {
       return false;
     }
   }
 
-  void addToCompleteInventory(
-      List<Widget> widgetInventory, List<Ingredient> objectInventory,
-      [String? ans]) {
+  void addToCompleteInventory([String? ans]) {
+    List<Widget> completeWidgetInventory =
+        container.read(completeWidgetInventoryProvider);
+    List<Ingredient> completeObjectInventory =
+        container.read(completeObjectInventoryProvider);
     if ((ans == null || ans == password) &&
-        !objectInventory.contains(this) &&
-        objectInventory.length <= 5) {
-      widgetInventory.add(inventoryTile());
-      objectInventory.add(this);
+        !completeObjectInventory.contains(this) &&
+        completeObjectInventory.length <= 5) {
+      completeWidgetInventory.add(Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage(inventoryImgPath), fit: BoxFit.cover),
+        ),
+        child: inventoryTile(),
+      ));
+      completeObjectInventory.add(this);
+      container
+          .read(completeWidgetInventoryProvider.notifier)
+          .updateList(completeWidgetInventory);
+      container
+          .read(completeObjectInventoryProvider.notifier)
+          .updateList(completeObjectInventory);
     }
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:refrigerator/Screen/room4b_screen.dart';
+import 'package:refrigerator/provider/tool_provider.dart';
 import 'package:refrigerator/widgets/main_appbar.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:refrigerator/widgets/main_drawer.dart';
@@ -15,15 +17,15 @@ class HomeScreenArguments {
   HomeScreenArguments({required this.room});
 }
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
   static const routeName = "/home-screen";
 
   @override
-  State<HomeScreen> createState() => HomeScreenState();
+  ConsumerState<HomeScreen> createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends ConsumerState<HomeScreen> {
   String result = '';
   bool isInit = true;
   bool isCorrect = false;
@@ -37,6 +39,11 @@ class HomeScreenState extends State<HomeScreen> {
   List<Widget> displayInventory = [];
   List<Ingredient> completeObjectInventory = [];
   List<Widget> completeWidgetInventory = [];
+  var objectInventoryNotifier;
+  var widgetInventoryNotifier;
+  var displayInventoryNotifier;
+  var completeObjectInventoryNotifier;
+  var completeWidgetInventoryNotifier;
 
   late ColorScheme colors;
   String decision = ""; // a or b
@@ -81,6 +88,13 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
+    widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
+    displayInventoryNotifier = ref.watch(displayInventoryProvider.notifier);
+    completeObjectInventoryNotifier =
+        ref.watch(completeObjectInventoryProvider.notifier);
+    completeWidgetInventoryNotifier =
+        ref.watch(completeWidgetInventoryProvider.notifier);
     super.initState();
     makeInventoryOutline();
     canSend = (startRoom == 1);
@@ -101,26 +115,13 @@ class HomeScreenState extends State<HomeScreen> {
       case 1:
         //インベントリ追加//TODO:egg1,2,3と追加する
         setState(() {
-          isSuccessful = egg.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = greenLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = yellowLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = redLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = egg.addToInventory(password);
+          isSuccessful = greenLiquid.addToInventory(password);
+          isSuccessful = yellowLiquid.addToInventory(password);
+          isSuccessful = redLiquid.addToInventory(password);
         });
-        checker1.useCompleteMixer(
-            context,
-            password,
-            goldenEgg,
-            [egg],
-            objectInventory,
-            widgetInventory,
-            displayInventory,
-            completeObjectInventory,
-            completeWidgetInventory,
-            showFirstClearDialog);
+        checker1.showSelectItemsDialog(password, checker1.useCompleteMixer,
+            goldenEgg, [egg], showFirstClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -131,19 +132,11 @@ class HomeScreenState extends State<HomeScreen> {
         break;
 
       case 2:
-        mixer1.useCompleteMixer(
-            context,
-            password,
-            goldenHimono,
-            [tomato, egg],
-            objectInventory,
-            widgetInventory,
-            displayInventory,
-            completeObjectInventory,
-            completeWidgetInventory,
-            showSecondClearDialog);
-        isSuccessful = tomato.addToInventory(
-            displayInventory, widgetInventory, objectInventory, password);
+        setState(() {
+          isSuccessful = tomato.addToInventory(password);
+        });
+        mixer1.showSelectItemsDialog(password, mixer1.useCompleteMixer,
+            goldenHimono, [tomato], showSecondClearDialog);
 
         if (objectInventory.length < 5 && isSuccessful) {
           showPickedDialog();
@@ -155,33 +148,22 @@ class HomeScreenState extends State<HomeScreen> {
 
       case 3:
         setState(() {
-          isSuccessful = egg.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = greenLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = yellowLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
-          isSuccessful = redLiquid.addToInventory(
-              displayInventory, widgetInventory, objectInventory, password);
+          isSuccessful = greenLiquid.addToInventory(password);
+          isSuccessful = yellowLiquid.addToInventory(password);
+          isSuccessful = redLiquid.addToInventory(password);
         });
-        lightMixer.UseLightMixer(context, password, objectInventory,
-            widgetInventory, displayInventory);
-        lightSeparator.UseLightSeparator(context, password, objectInventory,
-            widgetInventory, displayInventory);
-        colorMixer.UseColorMixer(context, password, objectInventory,
-            widgetInventory, displayInventory);
-        colorSeparator.UseColorSeparator(context, password, objectInventory,
-            widgetInventory, displayInventory);
-        blackAndWhiteMixer.useCompleteMixer(
-            context,
+        lightMixer.showSelectItemsDialog(password, lightMixer.useLightMixer);
+        lightSeparator.showSelectItemsDialog(
+            password, lightSeparator.useLightSeparator);
+        colorMixer.showSelectItemsDialog(
+            password, colorSeparator.useColorSeparator);
+        colorSeparator.showSelectItemsDialog(
+            password, colorMixer.useColorMixer);
+        blackAndWhiteMixer.showSelectItemsDialog(
             password,
+            blackAndWhiteMixer.useCompleteMixer,
             goldenLiquid,
             [blackLiquid, whiteLiquid],
-            objectInventory,
-            widgetInventory,
-            displayInventory,
-            completeObjectInventory,
-            completeWidgetInventory,
             showThirdClearDialog);
 
         if (objectInventory.length <= 5 && isSuccessful) {
@@ -199,14 +181,14 @@ class HomeScreenState extends State<HomeScreen> {
   void makeInventoryOutline() {
     setState(() {
       for (int i = 0; i <= 4; i++) {
-        displayInventory.add(Container(
+        displayInventoryNotifier.add(Container(
           width: 180,
           height: 180,
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
         ));
-        completeWidgetInventory.add(Container(
+        completeWidgetInventoryNotifier.add(Container(
           width: 180,
           height: 180,
           decoration: BoxDecoration(
@@ -325,40 +307,19 @@ class HomeScreenState extends State<HomeScreen> {
                   TextButton(
                     onPressed: (selectedItems.isNotEmpty)
                         ? () {
-                            showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return AlertDialog(
-                                      title: const Text("確認"),
-                                      content: const Text("本当に削除してよろしいですか？"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                            child: const Text("OK"),
-                                            onPressed: () {
-                                              for (int i in tags) {
-                                                objectInventory.removeAt(i);
-                                                widgetInventory.removeAt(i);
-                                                widgetInventory.add(Container(
-                                                  width: 150,
-                                                  height: 150,
-                                                  decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: AssetImage(
-                                                              inventoryImgPath),
-                                                          fit: BoxFit.cover)),
-                                                ));
-                                              }
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                            }),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("キャンセル"))
-                                      ]);
-                                });
+                            for (int i in tags) {
+                              objectInventoryNotifier.removeAt(i);
+                              widgetInventoryNotifier.removeAt(i);
+                              displayInventoryNotifier.add(Container(
+                                width: 150,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(inventoryImgPath),
+                                        fit: BoxFit.cover)),
+                              ));
+                            }
+                            Navigator.of(context).pop();
                           }
                         : null,
                     child: const Text("削除"),
@@ -383,16 +344,19 @@ class HomeScreenState extends State<HomeScreen> {
     return IconButton(
       onPressed: () {
         for (int i = 0; i <= 4; i++) {
-          displayInventory[i] = (Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
-          ));
+          displayInventoryNotifier.replace(
+              i,
+              Container(
+                width: 180,
+                height: 180,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(inventoryImgPath),
+                        fit: BoxFit.cover)),
+              ));
         }
-        objectInventory.clear();
-        widgetInventory.clear();
+        objectInventoryNotifier.clear();
+        widgetInventoryNotifier.clear();
       },
       icon: const Icon(Icons.close),
       style: IconButton.styleFrom(
@@ -567,10 +531,10 @@ class HomeScreenState extends State<HomeScreen> {
           //send
           canSend = false;
 
-          objectInventory.removeAt(i);
-          widgetInventory.removeAt(i);
-          displayInventory.removeAt(i);
-          displayInventory.add(Container(
+          objectInventoryNotifier.removeAt(i);
+          widgetInventoryNotifier.removeAt(i);
+          displayInventoryNotifier.removeAt(i);
+          displayInventoryNotifier.add(Container(
             width: 180,
             height: 180,
             decoration: BoxDecoration(
@@ -652,7 +616,7 @@ class HomeScreenState extends State<HomeScreen> {
                     child: const Text("こびとB"))
               ]);
         });
-  }
+  } //次の部屋にargumentとして残してもいいかも
 
   void showWaitDialog() {
     showDialog(
@@ -674,6 +638,12 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    objectInventory = ref.watch(objectInventoryProvider);
+    widgetInventory = ref.watch(widgetInventoryProvider);
+    displayInventory = ref.watch(displayInventoryProvider);
+    completeWidgetInventory = ref.watch(completeWidgetInventoryProvider);
+    completeObjectInventory = ref.watch(completeObjectInventoryProvider);
+
     colors = Theme.of(context).colorScheme;
     startRoom =
         (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)

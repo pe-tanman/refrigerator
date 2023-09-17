@@ -5,6 +5,22 @@ import 'package:refrigerator/Utilities/ingredients.dart';
 class WidgetInventoryNotifier extends StateNotifier<List<Widget>> {
   WidgetInventoryNotifier() : super([]);
 
+  void add(Widget widget) {
+    state.add(widget);
+  }
+
+  void removeAt(int index) {
+    state.removeAt(index);
+  }
+
+  void replace(int index, Widget widget) {
+    state[index] = widget;
+  }
+
+  void clear() {
+    state.clear();
+  }
+
   void updateList(List<Widget> list) {
     state = list;
   }
@@ -13,8 +29,20 @@ class WidgetInventoryNotifier extends StateNotifier<List<Widget>> {
 class ObjectInventoryNotifier extends StateNotifier<List<Ingredient>> {
   ObjectInventoryNotifier() : super([]);
 
+  void add(Ingredient ingredient) {
+    state.add(ingredient);
+  }
+
+  void removeAt(int index) {
+    state.removeAt(index);
+  }
+
   void updateList(List<Ingredient> list) {
     state = list;
+  }
+
+  void clear() {
+    state.clear();
   }
 }
 

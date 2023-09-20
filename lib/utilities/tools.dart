@@ -19,7 +19,7 @@ class Tools {
   String actionName;
   String inventoryImgPath = "images/background/inventory_tile.png";
 
-  void showSelectItemsDialog(String ans, Function onSelected, WidgetRef ref,
+  bool showSelectItemsDialog(String ans, Function onSelected, WidgetRef ref,
       [Ingredient? correctOutput,
       List<Ingredient>? incorrectOutputs,
       List<Ingredient>? correctIngredients,
@@ -28,7 +28,9 @@ class Tools {
     List<int> selectedItems = [];
     List<Widget> widgetInventory = ref.watch(widgetInventoryProvider);
     List<Ingredient> objectInventory = ref.read(objectInventoryProvider);
-    List<Widget> displayInventory = ref.read(displayInventoryProvider);
+    var objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
+    var widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
+    var recognitionNotifier = ref.watch(recognitionProvider.notifier);
     BuildContext? context = ref.read(mainContextProvider);
     List<int> tags = List.generate(widgetInventory.length, (index) => index);
 
@@ -43,7 +45,9 @@ class Tools {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(image),
+                      SizedBox(
+                          width: 100, height: 100, child: Image.asset(image)),
+                      const Divider(),
                       Wrap(
                         runSpacing: 16,
                         spacing: 16,
@@ -92,44 +96,28 @@ class Tools {
                     onPressed: (capacity.contains(selectedItems.length))
                         ? () {
                             Navigator.of(context).pop();
-                            Navigator.of(context).pop();
 
                             for (int i = selectedItems.length - 1;
                                 i >= 0;
                                 i--) {
+                              print(tags[i]);
                               selectedIngredients.add(objectInventory[tags[i]]);
-                              objectInventory.removeAt(tags[i]);
-                              widgetInventory.removeAt(tags[i]);
-                              displayInventory.removeAt(tags[i]);
-                              displayInventory.add(Container(
-                                width: 180,
-                                height: 180,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(inventoryImgPath),
-                                        fit: BoxFit.cover)),
-                              ));
-                              //更新
-                              ref
-                                  .read(widgetInventoryProvider.notifier)
-                                  .updateList(widgetInventory);
-                              ref
-                                  .read(objectInventoryProvider.notifier)
-                                  .updateList(objectInventory);
-                              ref
-                                  .read(displayInventoryProvider.notifier)
-                                  .updateList(displayInventory);
-                              if (correctOutput != null) {
-                                onSelected(
-                                    correctOutput,
-                                    incorrectOutputs,
-                                    correctIngredients,
-                                    selectedIngredients,
-                                    onPopupConfirmed,
-                                    ref);
-                              } else {
-                                onSelected(selectedIngredients, ref);
-                              }
+                              objectInventoryNotifier.removeAt(tags[i]);
+                              widgetInventoryNotifier.removeAt(tags[i]);
+                            }
+                            //更新
+                            recognitionNotifier.increment();
+
+                            if (correctOutput != null) {
+                              onSelected(
+                                  correctOutput,
+                                  incorrectOutputs,
+                                  correctIngredients,
+                                  selectedIngredients,
+                                  onPopupConfirmed,
+                                  ref);
+                            } else {
+                              onSelected(selectedIngredients, ref);
                             }
                           }
                         : null,
@@ -139,7 +127,9 @@ class Tools {
               );
             });
           });
+      return true;
     }
+    return false;
   }
 
   void useCompleteMixer(
@@ -162,7 +152,7 @@ class Tools {
       } else {
         int randomNum = math.Random().nextInt(3);
         switch (randomNum) {
-          //明らかに外れなものを入れる
+          //todo:明らかに外れなものを入れる+showDialog
           case 0:
             break;
           case 1:
@@ -207,16 +197,20 @@ class Tools {
 
   void useLightSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
     //separate
-
-    if (selectedIngredients[0].rgb != null) {
+    if (ref.read(objectInventoryProvider).length <
+            4 - selectedIngredients.length &&
+        selectedIngredients[0].rgb != null) {
       if (selectedIngredients[0].rgb!.sum == 2) {
         RGB rgb1 = selectedIngredients[0].rgb!;
         List<Ingredient> separatedLiquid = rgb1.separateLight();
         for (Ingredient liquid in separatedLiquid) {
           liquid.addToInventory(ref);
         }
+        return;
       }
     }
+
+    ///仕様出来ない
   }
 
   void useColorMixer(List<Ingredient> selectedIngredients, WidgetRef ref) {
@@ -252,7 +246,9 @@ class Tools {
 
   void useColorSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
     ///separate
-    if (selectedIngredients[0].rgb != null) {
+    if (ref.read(objectInventoryProvider).length <
+            4 - selectedIngredients.length &&
+        selectedIngredients[0].rgb != null) {
       if (selectedIngredients[0].rgb!.sum == 1) {
         RGB rgb1 = selectedIngredients[0].rgb!;
         List<Ingredient> separatedLiquid = rgb1.separateColor();

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:refrigerator/provider/tool_provider.dart';
 import 'package:refrigerator/widgets/main_appbar.dart';
 import "/Screens/quit_screen.dart";
 import "package:refrigerator/data/room_data.dart";
 
 import 'package:refrigerator/widgets/main_drawer.dart';
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class Room4bScreen extends StatefulWidget {
+class Room4bScreen extends ConsumerStatefulWidget {
   const Room4bScreen({Key? key}) : super(key: key);
   static const routeName = "/room-4b-screen";
   @override
-  State<Room4bScreen> createState() => _Room4bScreenState();
+  ConsumerState<Room4bScreen> createState() => _Room4bScreenState();
 }
 
-class _Room4bScreenState extends State<Room4bScreen> {
+class _Room4bScreenState extends ConsumerState<Room4bScreen> {
   int room = 5;
   String questionImgPath = "assets/images/question.jpg";
 
@@ -45,8 +47,11 @@ class _Room4bScreenState extends State<Room4bScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      room = ref.watch(roomProvider);
+    });
     return Scaffold(
-      appBar: MainAppbar(room: room),
+      appBar: const MainAppbar(),
       drawer: const MainDrawer(),
       body: Container(
         decoration: BoxDecoration(

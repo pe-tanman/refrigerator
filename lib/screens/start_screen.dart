@@ -53,7 +53,7 @@ class StartScreen extends StatelessWidget {
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Text("こびと1",
+                    child: Text("こびとNo.37",
                         style: TextStyle(
                             fontSize: 35, fontWeight: FontWeight.w600)),
                   ),
@@ -91,7 +91,7 @@ class StartScreen extends StatelessWidget {
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Text("こびと2",
+                      child: Text("こびとNo.547",
                           style: TextStyle(
                               fontSize: 35, fontWeight: FontWeight.w600)),
                     )),

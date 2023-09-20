@@ -41,13 +41,15 @@ dependencies:
   vector_math: ^2.1.4
   flutter_riverpod: ^2.3.6
   video_player: ^2.7.1
-  riverpod_annotation: ^2.1.5
+  freezed_annotation: ^2.2.0
 
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  freezed: ^2.3.2
+  build_runner: ^2.3.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

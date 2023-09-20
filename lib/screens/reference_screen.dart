@@ -26,7 +26,7 @@ class ReferenceScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Image.asset("assets/images/map.png"),
+                child: Image.asset("images/map.png"),
               ),
             ],
           ),

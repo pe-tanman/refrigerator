@@ -10,7 +10,7 @@ class RGB {
         color = Colors.black;
         liquid = Ingredient(
             name: "blackLiquid",
-            image: "assets/images/black_liquid.png",
+            image: "images/black_liquid.png",
             password: "black-7196",
             rgb: this);
         break;
@@ -18,7 +18,7 @@ class RGB {
         color = Colors.red;
         liquid = Ingredient(
             name: "redLiquid",
-            image: "assets/images/red_liquid.png",
+            image: "images/red_liquid.png",
             password: "red-5290",
             rgb: this);
         break;
@@ -26,7 +26,7 @@ class RGB {
         color = Colors.green;
         liquid = Ingredient(
             name: "greenLiquid",
-            image: "assets/images/green_liquid.png",
+            image: "images/green_liquid.png",
             password: "green-7129",
             rgb: this);
         break;
@@ -34,7 +34,7 @@ class RGB {
         color = Colors.blue;
         liquid = Ingredient(
             name: "blueLiquid",
-            image: "assets/images/blue_liquid.png",
+            image: "images/blue_liquid.png",
             password: "blue-0975",
             rgb: this);
         break;
@@ -42,7 +42,7 @@ class RGB {
         color = Colors.yellow;
         liquid = Ingredient(
             name: "yellowLiquid",
-            image: "assets/images/yellow_liquid.png",
+            image: "images/yellow_liquid.png",
             password: "yellow-7127",
             rgb: this);
         break;
@@ -50,7 +50,7 @@ class RGB {
         color = Colors.pink;
         liquid = Ingredient(
             name: "magentaLiquid",
-            image: "assets/images/magenta_liquid.png",
+            image: "images/magenta_liquid.png",
             password: "magenta-1237",
             rgb: this);
         break;
@@ -58,7 +58,7 @@ class RGB {
         color = Colors.cyan;
         liquid = Ingredient(
             name: "cyanLiquid",
-            image: "assets/images/cyan_liquid.png",
+            image: "images/cyan_liquid.png",
             password: "cyan-1267",
             rgb: this);
         break;
@@ -66,7 +66,7 @@ class RGB {
         color = Colors.white;
         liquid = Ingredient(
             name: "whiteLiquid",
-            image: "assets/images/white_liquid.png",
+            image: "images/white_liquid.png",
             password: "white-1923",
             rgb: this);
         break;

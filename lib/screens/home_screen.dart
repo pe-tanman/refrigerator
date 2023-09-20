@@ -30,7 +30,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   String result = '';
   bool isInit = true;
   bool isCorrect = false;
-  bool isSuccessful = false;
+  bool isSuccessfulPick = false;
+  bool isSuccessfulUse = false;
   bool canSend = false;
   int room = 1;
   int startRoom = 1;
@@ -40,83 +41,129 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   List<Widget> displayInventory = [];
   List<Ingredient> completeObjectInventory = [];
   List<Widget> completeWidgetInventory = [];
+  int recognition = 0;
   var objectInventoryNotifier;
   var widgetInventoryNotifier;
-  var displayInventoryNotifier;
   var completeObjectInventoryNotifier;
   var completeWidgetInventoryNotifier;
+  var roomNotifier;
+  var contextNotifier;
+  var recognitionNotifier;
 
   late ColorScheme colors;
   String decision = ""; // a or b
 
   //room1
   Ingredient redEgg = Ingredient(
-      name: "赤の卵",
-      image: "assets/images/items/red_egg.png",
-      password: "red-egg");
+      name: "赤の卵", image: "images/items/red_egg.png", password: "red-egg");
   Ingredient blueEgg = Ingredient(
-      name: "青の卵",
-      image: "assets/images/items/blue_egg.png",
-      password: "blue-egg");
+      name: "青の卵", image: "images/items/blue_egg.png", password: "blue-egg");
   Ingredient yellowEgg = Ingredient(
       name: "黄色の卵",
-      image: "assets/images/items/yellow_egg.png",
+      image: "images/items/yellow_egg.png",
       password: "yellow-egg");
   Ingredient brownEgg = Ingredient(
-      name: "茶色の卵",
-      image: "assets/images/items/brown_egg.png",
-      password: "brown-egg");
+      name: "茶色の卵", image: "images/items/brown_egg.png", password: "brown-egg");
   Ingredient purpleEgg = Ingredient(
       name: "紫の卵",
-      image: "assets/images/items/purple_egg.png",
+      image: "images/items/purple_egg.png",
       password: "purple-egg");
   Ingredient greenEgg = Ingredient(
-      name: "緑の卵",
-      image: "assets/images/items/green_egg.png",
-      password: "green-egg");
+      name: "緑の卵", image: "images/items/green_egg.png", password: "green-egg");
   Ingredient blackEgg = Ingredient(
-      name: "黒の卵",
-      image: "assets/images/items/black_egg.png",
-      password: "black-egg");
+      name: "黒の卵", image: "images/items/black_egg.png", password: "black-egg");
   Ingredient correctCrashedEgg = Ingredient(
       name: "輝く卵",
-      image: "assets/images/items/correct_crashed_egg.png",
+      image: "images/items/correct_crashed_egg.png",
       password: "correct-egg-52");
   Ingredient incorrectCrashedEgg = Ingredient(
       name: "腐った卵",
-      image: "assets/images/items/incorrect_crashed_egg.png",
+      image: "images/items/incorrect_crashed_egg.png",
       password: "incorrect-egg");
   Tools checker1 = Tools(
       capacity: [1],
       password: "checker-1263",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "割って確認");
   //room2
   Tools mixer1 = Tools(
       capacity: [3],
       password: "mixer1-7213",
-      image: "assets/images/tools/mortar.png",
+      image: "images/tools/mortar.png",
       actionName: "混合");
   Ingredient goldenHimono = Ingredient(
       name: "goldenHimono",
-      image: "assets/images/items/wasyoku_himono.png",
+      image: "images/items/wasyoku_himono.png",
       password: "himono-0123");
   Ingredient himono1 = Ingredient(
       name: "himono1",
-      image: "assets/images/items/wasyoku_himono.png",
+      image: "images/items/wasyoku_himono.png",
       password: "himono-1111");
   Ingredient himono2 = Ingredient(
       name: "himono2",
-      image: "assets/images/items/wasyoku_himono.png",
+      image: "images/items/wasyoku_himono.png",
       password: "himono-2222");
   Ingredient himono3 = Ingredient(
       name: "himono3",
-      image: "assets/images/items/wasyoku_himono.png",
+      image: "images/items/wasyoku_himono.png",
       password: "himono-3333");
+
+  Ingredient monosashiUo = Ingredient(
+      name: "mo no sa shi u o",
+      image: "images/items/monosashi_uo.png",
+      password: "monosashi-uo",
+      detail:
+          "mo no sa shi u o\nka na ra zu ki ma ttsu ta o o ki sa ni na ru\no to na ni na ru to 5 0 c m ni na ru");
+  Ingredient akakiGoi = Ingredient(
+      name: "N xn xv tb v",
+      image: "images/items/akaki_goi.png",
+      password: "akaki-goi");
+  Ingredient haburashiModoki = Ingredient(
+      name: "Un oh en fuv zb gb xv",
+      image: "images/items/haburashi_modoki.png",
+      password: "haburashi-modoki");
+  Ingredient masanba = Ingredient(
+      name: "Zn fu a on",
+      image: "images/items/masanba.png",
+      password: "masanba");
+  Ingredient rizuminori = Ingredient(
+      name: "Ev mh zv ab ev",
+      image: "images/items/rizuminori.png",
+      password: "rizuminori");
+  Ingredient medamaDake = Ingredient(
+      name: "Zr qn zn qn xr",
+      image: "images/items/medama_dake.png",
+      password: "medamadake");
+  Ingredient akaDama = Ingredient(
+      name: "N xn qn zn",
+      image: "images/items/aka_dama.png",
+      password: "aka-dama");
+  Ingredient tomaTomato = Ingredient(
+      name: "Gl zn gl zn gl",
+      image: "images/items/toma_tomato.png",
+      password: "toma-tomato");
+  Ingredient shiragaDake = Ingredient(
+      name: "Fuv en tn gn xr",
+      image: "images/items/shiraga_dake.png",
+      password: "shiraga-dake");
+  Ingredient kinnoMi = Ingredient(
+      name: "Xv a ab zv",
+      image: "images/items/kinno_mi.png",
+      password: "kinno-mi");
+  Ingredient sotennoMi = Ingredient(
+      name: "Fb gr a ab zv",
+      image: "images/items/sotenno_mi.png",
+      password: "sotenno-mi");
+  Ingredient tamichi = Ingredient(
+      name: "Gn zv gv", image: "images/items/tamichi.png", password: "tamichi");
+  Ingredient hakoBudou = Ingredient(
+      name: "Un xb oh qb h",
+      image: "images/items/hako_budou.png",
+      password: "hako-budou");
 //room3
   Ingredient goldenLiquid = Ingredient(
       name: "goldenLiquid",
-      image: "assets/images/monster.png",
+      image: "images/monster.png",
       password: "liquid-0123");
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
   Ingredient greenLiquid = RGB(0, 1, 0).liquid;
@@ -130,27 +177,27 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Tools lightMixer = Tools(
       capacity: [2, 3],
       password: "lightMixer",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "光の混合");
   Tools lightSeparator = Tools(
       capacity: [1],
       password: "lightSeparator",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "光の分解");
   Tools colorMixer = Tools(
       capacity: [2, 3],
       password: "colorMixer",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "色の混合");
   Tools colorSeparator = Tools(
       capacity: [1],
       password: "colorMixer",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "色の分解");
   Tools blackAndWhiteMixer = Tools(
       capacity: [2],
       password: "mixer2-7113",
-      image: "assets/images/tools/mixer.png",
+      image: "images/tools/mixer.png",
       actionName: "混合");
 
   @override
@@ -159,19 +206,24 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     Future.delayed(Duration.zero, () {
       objectInventoryNotifier = ref.watch(objectInventoryProvider.notifier);
       widgetInventoryNotifier = ref.watch(widgetInventoryProvider.notifier);
-      displayInventoryNotifier = ref.watch(displayInventoryProvider.notifier);
       completeObjectInventoryNotifier =
           ref.watch(completeObjectInventoryProvider.notifier);
       completeWidgetInventoryNotifier =
           ref.watch(completeWidgetInventoryProvider.notifier);
+      roomNotifier = ref.watch(roomProvider.notifier);
+      contextNotifier = ref.watch(mainContextProvider.notifier);
+      recognitionNotifier = ref.watch(recognitionProvider.notifier);
 
       objectInventory = ref.watch(objectInventoryProvider);
       widgetInventory = ref.watch(widgetInventoryProvider);
-      displayInventory = ref.watch(displayInventoryProvider);
+      //displayInventory = ref.watch(displayInventoryProvider);
       completeWidgetInventory = ref.watch(completeWidgetInventoryProvider);
       completeObjectInventory = ref.watch(completeObjectInventoryProvider);
+      room = ref.watch(roomProvider);
+      recognition = ref.watch(recognitionProvider);
+      makeInitInventoryOutline();
+      roomNotifier.setRoom(startRoom);
 
-      makeInventoryOutline();
       canSend = (startRoom == 1);
     });
   }
@@ -182,110 +234,160 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         MaterialPageRoute(
           builder: (context) => const SimpleBarcodeScannerPage(),
         ));
-    print(res as String);
     return res as String;
   }
 
   void pick(String password) {
-    switch (room) {
+    switch (ref.watch(roomProvider)) {
       case 1:
-        //インベントリ追加//TODO:egg1,2,3と追加する
         setState(() {
-          isSuccessful = redEgg.addToInventory(ref, password);
-          isSuccessful = greenEgg.addToInventory(ref, password);
-          isSuccessful = purpleEgg.addToInventory(ref, password);
-          isSuccessful = yellowEgg.addToInventory(ref, password);
-          isSuccessful = blackEgg.addToInventory(ref, password);
-          isSuccessful = blueEgg.addToInventory(ref, password);
-          isSuccessful = brownEgg.addToInventory(ref, password);
+          isSuccessfulPick = (redEgg.addToInventory(ref, password) ||
+              greenEgg.addToInventory(ref, password) ||
+              purpleEgg.addToInventory(ref, password) ||
+              yellowEgg.addToInventory(ref, password) ||
+              blackEgg.addToInventory(ref, password) ||
+              blueEgg.addToInventory(ref, password) ||
+              brownEgg.addToInventory(ref, password));
         });
-        //test
+        isSuccessfulUse = checker1.showSelectItemsDialog(
+            password,
+            checker1.useCompleteMixer,
+            ref,
+            correctCrashedEgg,
+            [],
+            [yellowEgg],
+            showFirstClearDialog);
 
-        checker1.showSelectItemsDialog(password, checker1.useCompleteMixer, ref,
-            correctCrashedEgg, [], [yellowEgg], showFirstClearDialog);
-
-        if (objectInventory.length < 5 && isSuccessful) {
+        if (isSuccessfulPick) {
           showPickedDialog();
-          isSuccessful = false;
-        } else if (objectInventory.length >= 5) {
+          isSuccessfulPick = false;
+        } else if (isSuccessfulUse) {
+          isSuccessfulUse = false;
+        } else {
           showPickFailedDialog();
         }
         break;
 
       case 2:
         setState(() {
-          isSuccessful = himono1.addToInventory(ref, password);
-          isSuccessful = himono2.addToInventory(ref, password);
-          isSuccessful = himono3.addToInventory(ref, password);
+          isSuccessfulPick = himono1.addToInventory(ref, password) ||
+              himono2.addToInventory(ref, password) ||
+              himono3.addToInventory(ref, password) ||
+              monosashiUo.addToInventory(ref, password) ||
+              haburashiModoki.addToInventory(ref, password) ||
+              rizuminori.addToInventory(ref, password) ||
+              masanba.addToInventory(ref, password) ||
+              akakiGoi.addToInventory(ref, password) ||
+              shiragaDake.addToInventory(ref, password) ||
+              tomaTomato.addToInventory(ref, password) ||
+              akaDama.addToInventory(ref, password) ||
+              medamaDake.addToInventory(ref, password) ||
+              tamichi.addToInventory(ref, password) ||
+              kinnoMi.addToInventory(ref, password) ||
+              hakoBudou.addToInventory(ref, password) ||
+              sotennoMi.addToInventory(ref, password);
         });
-        mixer1.showSelectItemsDialog(
+        isSuccessfulUse = mixer1.showSelectItemsDialog(
             password,
             mixer1.useCompleteMixer,
             ref,
             goldenHimono,
             [],
-            [himono1, himono2, himono3],
+            [masanba, tomaTomato, kinnoMi],
             showSecondClearDialog);
 
-        if (objectInventory.length < 5 && isSuccessful) {
+        if (isSuccessfulPick) {
           showPickedDialog();
-          isSuccessful = false;
-        } else if (objectInventory.length >= 5) {
+          isSuccessfulPick = false;
+        } else if (isSuccessfulUse) {
+          isSuccessfulUse = false;
+        } else {
           showPickFailedDialog();
         }
         break;
 
       case 3:
         setState(() {
-          isSuccessful = greenLiquid.addToInventory(ref, password);
-          isSuccessful = yellowLiquid.addToInventory(ref, password);
-          isSuccessful = redLiquid.addToInventory(ref, password);
-          isSuccessful = blueLiquid.addToInventory(ref, password);
-          isSuccessful = cyanLiquid.addToInventory(ref, password);
-          isSuccessful = magentaLiquid.addToInventory(ref, password);
-          isSuccessful = whiteLiquid.addToInventory(ref, password);
-          isSuccessful = blackLiquid.addToInventory(ref, password);
+          isSuccessfulPick = (greenLiquid.addToInventory(ref, password) ||
+              yellowLiquid.addToInventory(ref, password) ||
+              redLiquid.addToInventory(ref, password) ||
+              blueLiquid.addToInventory(ref, password) ||
+              cyanLiquid.addToInventory(ref, password) ||
+              magentaLiquid.addToInventory(ref, password) ||
+              whiteLiquid.addToInventory(ref, password) ||
+              blackLiquid.addToInventory(ref, password));
         });
 
-        lightMixer.showSelectItemsDialog(
-            password, lightMixer.useLightMixer, ref);
-        lightSeparator.showSelectItemsDialog(
-            password, lightSeparator.useLightSeparator, ref);
-        colorMixer.showSelectItemsDialog(
-            password, colorSeparator.useColorSeparator, ref);
-        colorSeparator.showSelectItemsDialog(
-            password, colorMixer.useColorMixer, ref);
-        blackAndWhiteMixer.showSelectItemsDialog(
-            password,
-            blackAndWhiteMixer.useCompleteMixer,
-            ref,
-            goldenLiquid,
-            [],
-            [blackLiquid, whiteLiquid],
-            showThirdClearDialog);
+        isSuccessfulUse = lightMixer.showSelectItemsDialog(
+                password, lightMixer.useLightMixer, ref) ||
+            lightSeparator.showSelectItemsDialog(
+                password, lightSeparator.useLightSeparator, ref) ||
+            lightMixer.showSelectItemsDialog(
+                password, colorSeparator.useColorSeparator, ref) ||
+            colorMixer.showSelectItemsDialog(
+                password, colorMixer.useColorMixer, ref) ||
+            blackAndWhiteMixer.showSelectItemsDialog(
+                password,
+                blackAndWhiteMixer.useCompleteMixer,
+                ref,
+                goldenLiquid,
+                [],
+                [blackLiquid, whiteLiquid],
+                showThirdClearDialog);
 
-        if (objectInventory.length <= 5 && isSuccessful) {
+        if (isSuccessfulPick) {
           //受け取ったときの処理
           canSend = true;
           showPickedDialog();
-          isSuccessful = false;
+          isSuccessfulPick = false;
+        } else if (isSuccessfulUse) {
+          isSuccessfulUse = false;
         } else {
           showPickFailedDialog();
         }
         break;
+      case 4:
     }
   }
 
   void makeInventoryOutline() {
-    for (int i = 0; i <= 4; i++) {
-      displayInventoryNotifier.add(Container(
+    List<Widget> display = [];
+    for (int j = 0; j < widgetInventory.length; j++) {
+      display.add(Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+        child: widgetInventory[j],
+      ));
+    }
+
+    for (int i = 0; i <= 3 - widgetInventory.length; i++) {
+      display.add(Container(
         width: 180,
         height: 180,
         decoration: BoxDecoration(
             image: DecorationImage(
                 image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
       ));
-      completeWidgetInventoryNotifier.add(Container(
+    }
+    displayInventory = display;
+    setState(() {});
+  }
+
+  void makeInitInventoryOutline() {
+    for (int i = 0; i <= 3; i++) {
+      displayInventory.add(Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
+      ));
+    }
+    for (int i = 0; i <= 3; i++) {
+      completeWidgetInventory.add(Container(
         width: 180,
         height: 180,
         decoration: BoxDecoration(
@@ -341,7 +443,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 200, height: 30),
-                  Text("インベントリが満タンか、正しくない食材を手に取りました。"),
+                  Text("インベントリが満タンか、正しくないQRコードを読み込みました。"),
                 ],
               ),
             ),
@@ -363,69 +465,70 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                title: const Text("消去するアイテムを選択"),
-                content: Wrap(
-                  runSpacing: 16,
-                  spacing: 16,
-                  children: tags.map((tag) {
-                    // selectedTags の中に自分がいるかを確かめる
-                    bool isSelected = selectedItems.contains(tag);
-                    return InkWell(
-                      borderRadius: const BorderRadius.all(Radius.circular(32)),
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            // すでに選択されていれば取り除く
-                            selectedItems.remove(tag);
-                          } else {
-                            // 選択されていなければ追加する
-                            selectedItems.add(tag);
-                          }
-                          isSelected = selectedItems.contains(tag);
-                        });
-                      },
-                      child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(32)),
-                            border: Border.all(
-                              width: 2,
-                              color:
-                                  isSelected ? Colors.lightBlue : Colors.white,
-                            ),
-                            color: isSelected ? Colors.lightBlue : null,
-                          ),
-                          child: widgetInventory[tag]),
-                    );
-                  }).toList(),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: (selectedItems.isNotEmpty)
-                        ? () {
-                            for (int i in tags) {
-                              objectInventoryNotifier.removeAt(i);
-                              widgetInventoryNotifier.removeAt(i);
-                              displayInventoryNotifier.add(Container(
-                                width: 150,
-                                height: 150,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(inventoryImgPath),
-                                        fit: BoxFit.cover)),
-                              ));
+              return StatefulBuilder(builder: (context, StateSetter setState) {
+                return AlertDialog(
+                  title: const Text("消去するアイテムを選択"),
+                  content: Wrap(
+                    runSpacing: 16,
+                    spacing: 16,
+                    children: tags.map((tag) {
+                      // selectedTags の中に自分がいるかを確かめる
+                      bool isSelected = selectedItems.contains(tag);
+                      return InkWell(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(32)),
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              // すでに選択されていれば取り除く
+                              selectedItems.remove(tag);
+                            } else {
+                              // 選択されていなければ追加する
+                              selectedItems.add(tag);
                             }
-                            Navigator.of(context).pop();
-                          }
-                        : null,
-                    child: const Text("削除"),
-                  )
-                ],
-              );
+                            isSelected = selectedItems.contains(tag);
+                          });
+                        },
+                        child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(32)),
+                              border: Border.all(
+                                width: 2,
+                                color: isSelected
+                                    ? Colors.lightBlue
+                                    : Colors.white,
+                              ),
+                              color: isSelected ? Colors.lightBlue : null,
+                            ),
+                            child: (widgetInventory.isNotEmpty)
+                                ? widgetInventory[tag]
+                                : Container()),
+                      );
+                    }).toList(),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: (selectedItems.isNotEmpty)
+                          ? () {
+                              for (int i = selectedItems.length - 1;
+                                  i >= 0;
+                                  i--) {
+                                objectInventoryNotifier.removeAt(tags[i]);
+                                widgetInventoryNotifier.removeAt(tags[i]);
+                              }
+                              recognitionNotifier.increment();
+                              Navigator.of(context).pop();
+                            }
+                          : null,
+                      child: const Text("削除"),
+                    )
+                  ],
+                );
+              });
             });
       },
       icon: const Icon(Icons.delete),
@@ -443,20 +546,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildResetButton() {
     return IconButton(
       onPressed: () {
-        for (int i = 0; i <= 4; i++) {
-          displayInventoryNotifier.replace(
-              i,
-              Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(inventoryImgPath),
-                        fit: BoxFit.cover)),
-              ));
-        }
         objectInventoryNotifier.clear();
         widgetInventoryNotifier.clear();
+        recognitionNotifier.increment();
       },
       icon: const Icon(Icons.close),
       style: IconButton.styleFrom(
@@ -526,9 +618,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               TextButton(
                   child: const Text("次へ"),
                   onPressed: () {
-                    setState(() {
-                      room = 2;
-                    });
+                    ref.read(roomProvider.notifier).increment();
                     Navigator.of(context).pop();
                   })
             ],
@@ -543,37 +633,29 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           return AlertDialog(
             title: const Text("野菜室クリア!!",
                 style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: const SizedBox(
+            content: SizedBox(
               width: 200,
               height: 300,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("この先は二組に分かれて進んでください",
+                  const Text("この先は二組に分かれて進んでください",
                       style:
                           TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-                  Text("こびとAはAの部屋へ、こびとBはBの部屋へ進んでください"),
+                  (startRoom == 1)
+                      ? const Text("Aの部屋に進んでください")
+                      : const Text("Bの部屋に進んでください")
                 ],
               ),
             ),
             actions: <Widget>[
               // ボタン領域
               TextButton(
-                  child: const Text("Aへ進む"),
+                  child: const Text("OK"),
                   onPressed: () {
-                    setState(() {
-                      room = 3;
-                    });
+                    ref.watch(roomProvider.notifier).setRoom(3);
                     Navigator.of(context).pop();
                   }),
-              TextButton(
-                  child: const Text("Bへ進む"),
-                  onPressed: () {
-                    setState(() {
-                      room = 3;
-                    });
-                    Navigator.of(context).pop();
-                  })
             ],
           );
         });
@@ -603,7 +685,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   child: const Text("次へ"),
                   onPressed: () {
                     setState(() {
-                      room = 4;
+                      roomNotifier.setRoom(4);
                     });
                     Navigator.of(context).pop();
                     showReadStoryDialog();
@@ -624,14 +706,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
           objectInventoryNotifier.removeAt(i);
           widgetInventoryNotifier.removeAt(i);
-          displayInventoryNotifier.removeAt(i);
-          displayInventoryNotifier.add(Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
-          ));
+          recognitionNotifier.increment();
           Navigator.of(context).pop();
           //QRcode表示
           showDialog(
@@ -750,18 +825,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     startRoom =
         (ModalRoute.of(context)!.settings.arguments as HomeScreenArguments)
             .room;
-    if (isInit) {
-      room = startRoom;
-      isInit = false;
-    }
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isInit) {
+        ref.read(mainContextProvider.notifier).setContext(context);
+        isInit = false;
+      }
+    });
+    ref.listen(recognitionProvider, (previous, next) {
+      makeInventoryOutline();
+    });
+    ref.listen(roomProvider, (previous, next) {
+      setState(() {});
+    });
     return Scaffold(
-      appBar: MainAppbar(room: room),
+      appBar: const MainAppbar(),
       drawer: const MainDrawer(),
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage(RoomData.roomData(room)!.imgPath),
+                image: AssetImage(
+                    RoomData.roomData(ref.watch(roomProvider))!.imgPath),
                 fit: BoxFit.cover)),
         child: Center(
           child: Column(

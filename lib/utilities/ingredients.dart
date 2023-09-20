@@ -21,36 +21,15 @@ class Ingredient {
   String inventoryImgPath = "images/background/inventory_tile.png";
 
   bool addToInventory(WidgetRef ref, [String? ans]) {
-    List<Widget> displayInventory =
-        ref.read(displayInventoryProvider.notifier).get();
-    List<Widget> widgetInventory = ref.read(widgetInventoryProvider);
     List<Ingredient> objectInventory = ref.read(objectInventoryProvider);
 
     if ((ans == null || ans == password) &&
         !objectInventory.contains(this) &&
-        objectInventory.length <= 5) {
-      String inventoryImgPath = "images/background/inventory_tile.png";
-
-      displayInventory.insert(
-          widgetInventory.length,
-          Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: inventoryTile(),
-            ),
-          ));
-      widgetInventory.add(inventoryTile());
-      objectInventory.add(this);
-      displayInventory.removeAt(4);
-
-      ref.read(widgetInventoryProvider.notifier).updateList(widgetInventory);
-      ref.read(objectInventoryProvider.notifier).updateList(objectInventory);
-      ref.read(displayInventoryProvider.notifier).updateList(displayInventory);
+        objectInventory.length < 4) {
+      //なぜか変数にまとめるとだめだった
+      ref.read(widgetInventoryProvider.notifier).add(inventoryTile());
+      ref.read(objectInventoryProvider.notifier).add(this);
+      ref.read(recognitionProvider.notifier).increment();
 
       return true;
     } else {
@@ -66,16 +45,20 @@ class Ingredient {
     if ((ans == null || ans == password) &&
         !completeObjectInventory.contains(this) &&
         completeObjectInventory.length <= 5) {
-      completeWidgetInventory.add(Container(
-        width: 180,
-        height: 180,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(inventoryImgPath), fit: BoxFit.cover),
-        ),
-        child: inventoryTile(),
-      ));
+      completeWidgetInventory.insert(
+          completeObjectInventory.length,
+          Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(inventoryImgPath), fit: BoxFit.cover),
+            ),
+            child: inventoryTile(),
+          ));
       completeObjectInventory.add(this);
+      completeWidgetInventory.removeAt(4);
+
       ref
           .read(completeWidgetInventoryProvider.notifier)
           .updateList(completeWidgetInventory);

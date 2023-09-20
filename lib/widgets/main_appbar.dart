@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
 import "package:refrigerator/data/room_data.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class MainAppbar extends StatefulWidget implements PreferredSizeWidget {
-  final int room;
-  const MainAppbar({required this.room, Key? key}) : super(key: key);
+import "../provider/tool_provider.dart";
+
+class MainAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
+  const MainAppbar({Key? key}) : super(key: key);
 
   @override
-  State<MainAppbar> createState() => _MainAppbarState();
+  ConsumerState<MainAppbar> createState() => _MainAppbarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _MainAppbarState extends State<MainAppbar> {
+class _MainAppbarState extends ConsumerState<MainAppbar> {
   late int room;
   String time = "2:00";
+  int startMin = 2;
+  int min = 1;
+  int sec = 59;
   List<Widget> hintWidgets = [];
   bool hintAvailable = false;
-  List<String> hints = [];
+  bool isInit = true;
+  List<List<String>> hints = [
+    ["1-1", "1-2", "1-3"],
+    ["2-1", "2-2", "2-3"],
+    ["3-1", "3-2", "3-3"]
+  ];
+
   @override
   void initState() {
     super.initState();
-    room = widget.room;
-    startTimer();
+    Future.delayed(Duration.zero, () {
+      room = ref.watch(roomProvider);
+      runTimer();
+    });
   }
 
   Widget _buildHintButton() {
@@ -67,17 +80,23 @@ class _MainAppbarState extends State<MainAppbar> {
   }
 
   Future startTimer() async {
-    int startMin = 1;
+    min = 1;
+    sec = 59;
+    setState(() {});
+  }
+
+  Future runTimer() async {
     for (int i = 1; i <= 3; i++) {
-      for (int min = startMin - 1; min >= 0; min--) {
-        for (int sec = 59; sec >= 0; sec--) {
+      for (min = startMin - 1; min >= 0; min--) {
+        for (sec = 59; sec >= 0; sec--) {
+          await Future.delayed(const Duration(seconds: 1));
           if (mounted) {
             setState(() {
               time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
             });
+          } else {
+            return;
           }
-
-          await Future.delayed(const Duration(seconds: 1));
         }
       }
       addHint(i);
@@ -97,8 +116,17 @@ class _MainAppbarState extends State<MainAppbar> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(
+      roomProvider, // 購読対象のProviderを指定
+      (previous, next) {
+        startTimer();
+        Future.delayed(Duration.zero, () {
+          setState(() {});
+        });
+      },
+    );
     return AppBar(
-      title: Text(RoomData.roomData(room)!.title),
+      title: Text(RoomData.roomData(ref.watch(roomProvider))!.title),
       actions: [
         const Text("ヒント追加まで"),
         Center(

@@ -12,14 +12,14 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("スタート")),
+      appBar: AppBar(
+        title: const Text("スタート"),
+        backgroundColor: Colors.lightBlue[200],
+      ),
       drawer: const MainDrawer(),
       body: Center(
         child: Column(
           children: [
-            const SizedBox(
-              height: 50,
-            ),
             Container(
               width: 853.5,
               height: 480,
@@ -49,7 +49,7 @@ class StartScreen extends StatelessWidget {
                       elevation: 13),
                   onPressed: () {
                     Navigator.pushNamed(context, HomeScreen.routeName,
-                        arguments: HomeScreenArguments(room: 1));
+                        arguments: HomeScreenArguments(room: 0));
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),

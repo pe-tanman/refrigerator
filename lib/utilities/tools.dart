@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:refrigerator/utilities/ingredients.dart';
-import 'dart:math' as math;
 import 'package:refrigerator/utilities/RGB.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:refrigerator/provider/tool_provider.dart";
@@ -21,9 +20,10 @@ class Tools {
 
   bool showSelectItemsDialog(String ans, Function onSelected, WidgetRef ref,
       [Ingredient? correctOutput,
-      List<Ingredient>? incorrectOutputs,
+      Ingredient? incorrectOutput,
       List<Ingredient>? correctIngredients,
-      Function? onPopupConfirmed]) {
+      Function? onPopupConfirmed,
+      Function? showIncorrectDialog]) {
     List<Ingredient> selectedIngredients = [];
     List<int> selectedItems = [];
     List<Widget> widgetInventory = ref.watch(widgetInventoryProvider);
@@ -108,16 +108,23 @@ class Tools {
                             //更新
                             recognitionNotifier.increment();
 
-                            if (correctOutput != null) {
-                              onSelected(
-                                  correctOutput,
-                                  incorrectOutputs,
-                                  correctIngredients,
-                                  selectedIngredients,
-                                  onPopupConfirmed,
-                                  ref);
+                            if (showIncorrectDialog != null) {
+                              if (onPopupConfirmed != null) {
+                                onSelected(
+                                    correctOutput,
+                                    incorrectOutput,
+                                    correctIngredients,
+                                    selectedIngredients,
+                                    onPopupConfirmed,
+                                    showIncorrectDialog,
+                                    ref);
+                              } else {
+                                onSelected(selectedIngredients,
+                                    showIncorrectDialog, ref);
+                              }
                             } else {
-                              onSelected(selectedIngredients, ref);
+                              onSelected(correctIngredients,
+                                  selectedIngredients, onPopupConfirmed, ref);
                             }
                           }
                         : null,
@@ -132,12 +139,30 @@ class Tools {
     return false;
   }
 
-  void useCompleteMixer(
-      Ingredient correctOutput,
-      List<Ingredient> incorrectOutputs,
+  void useKeyhole(
       List<Ingredient> correctIngredients,
       List<Ingredient> selectedIngredients,
       Function? onPopupConfirmed,
+      WidgetRef ref) {
+    //mix
+    correctIngredients.sort(((a, b) => a.name.compareTo(b.name)));
+    selectedIngredients.sort(((a, b) => a.name.compareTo(b.name)));
+
+    //正解時
+    if (listEquals(correctIngredients, selectedIngredients)) {
+      if (onPopupConfirmed != null) {
+        onPopupConfirmed();
+      }
+    }
+  }
+
+  void useCompleteMixer(
+      Ingredient correctOutput,
+      Ingredient incorrectOutput,
+      List<Ingredient> correctIngredients,
+      List<Ingredient> selectedIngredients,
+      Function? onPopupConfirmed,
+      Function? showIncorrectDialog,
       WidgetRef ref) {
     //mix
     correctIngredients.sort(((a, b) => a.name.compareTo(b.name)));
@@ -150,21 +175,16 @@ class Tools {
       if (onPopupConfirmed != null) {
         onPopupConfirmed();
       } else {
-        int randomNum = math.Random().nextInt(3);
-        switch (randomNum) {
-          //todo:明らかに外れなものを入れる+showDialog
-          case 0:
-            break;
-          case 1:
-            break;
-          case 2:
-            break;
+        incorrectOutput.addToInventory(ref);
+        if (showIncorrectDialog != null) {
+          showIncorrectDialog();
         }
       }
     }
   }
 
-  void useLightMixer(List<Ingredient> selectedIngredients, WidgetRef ref) {
+  void useLightMixer(List<Ingredient> selectedIngredients, WidgetRef ref,
+      Function? showIncorrectDialog) {
     ///mix
     late Ingredient mixedLiquid;
     if (selectedIngredients.length == 2) {
@@ -175,9 +195,8 @@ class Tools {
         if (rgb1.sum == 1 && rgb2.sum == 1) {
           mixedLiquid = rgb1.mixLight(rgb2).liquid;
           mixedLiquid.addToInventory(ref);
+          return;
         }
-      } else {
-        print("液体しか投入できません");
       }
     }
     if (selectedIngredients.length == 3) {
@@ -190,12 +209,20 @@ class Tools {
         if (rgb1.sum + rgb2.sum + rgb3.sum == 3) {
           mixedLiquid = RGB(1, 1, 1).liquid;
           mixedLiquid.addToInventory(ref);
+          return;
         }
       }
+      if (showIncorrectDialog != null) {
+        showIncorrectDialog();
+      }
+    }
+    if (showIncorrectDialog != null) {
+      showIncorrectDialog();
     }
   }
 
-  void useLightSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
+  void useLightSeparator(List<Ingredient> selectedIngredients, WidgetRef ref,
+      Function? showIncorrectDialog) {
     //separate
     if (ref.read(objectInventoryProvider).length <
             4 - selectedIngredients.length &&
@@ -209,11 +236,13 @@ class Tools {
         return;
       }
     }
-
-    ///仕様出来ない
+    if (showIncorrectDialog != null) {
+      showIncorrectDialog();
+    }
   }
 
-  void useColorMixer(List<Ingredient> selectedIngredients, WidgetRef ref) {
+  void useColorMixer(List<Ingredient> selectedIngredients, WidgetRef ref,
+      Function? showIncorrectDialog) {
     ///mix
     late Ingredient mixedLiquid;
 
@@ -226,8 +255,7 @@ class Tools {
 
         mixedLiquid = rgb1.mixLight(rgb2).liquid;
         mixedLiquid.addToInventory(ref);
-      } else {
-        print("液体しか投入できません");
+        return;
       }
     }
 
@@ -238,13 +266,16 @@ class Tools {
           selectedIngredients[2].rgb != null) {
         mixedLiquid = RGB(0, 0, 0).liquid;
         mixedLiquid.addToInventory(ref);
-      } else {
-        print("液体しか投入できません");
+        return;
       }
+    }
+    if (showIncorrectDialog != null) {
+      showIncorrectDialog();
     }
   }
 
-  void useColorSeparator(List<Ingredient> selectedIngredients, WidgetRef ref) {
+  void useColorSeparator(List<Ingredient> selectedIngredients, WidgetRef ref,
+      Function? showIncorrectDialog) {
     ///separate
     if (ref.read(objectInventoryProvider).length <
             4 - selectedIngredients.length &&
@@ -255,7 +286,11 @@ class Tools {
         for (Ingredient liquid in separatedLiquid) {
           liquid.addToInventory(ref);
         }
+        return;
       }
+    }
+    if (showIncorrectDialog != null) {
+      showIncorrectDialog();
     }
   }
 }

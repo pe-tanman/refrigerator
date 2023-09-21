@@ -53,6 +53,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   late ColorScheme colors;
   String decision = ""; // a or b
 
+  //room0
+  Ingredient key = Ingredient(
+      name: "鍵", image: "images/items/key.png", password: "key-5281");
+  Tools keyhole = Tools(
+      password: "keyhole",
+      capacity: [1],
+      image: "images/tools/keyhole.png",
+      actionName: "解錠");
   //room1
   Ingredient redEgg = Ingredient(
       name: "赤の卵", image: "images/items/red_egg.png", password: "red-egg");
@@ -83,7 +91,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Tools checker1 = Tools(
       capacity: [1],
       password: "checker-1263",
-      image: "images/tools/mixer.png",
+      image: "images/tools/bowl.png",
       actionName: "割って確認");
   //room2
   Tools mixer1 = Tools(
@@ -91,23 +99,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       password: "mixer1-7213",
       image: "images/tools/mortar.png",
       actionName: "混合");
-  Ingredient goldenHimono = Ingredient(
-      name: "goldenHimono",
-      image: "images/items/wasyoku_himono.png",
-      password: "himono-0123");
-  Ingredient himono1 = Ingredient(
-      name: "himono1",
-      image: "images/items/wasyoku_himono.png",
-      password: "himono-1111");
-  Ingredient himono2 = Ingredient(
-      name: "himono2",
-      image: "images/items/wasyoku_himono.png",
-      password: "himono-2222");
-  Ingredient himono3 = Ingredient(
-      name: "himono3",
-      image: "images/items/wasyoku_himono.png",
-      password: "himono-3333");
-
+  Ingredient correctHimono = Ingredient(
+      name: "良薬のような粉末",
+      image: "images/items/correct_himono.png",
+      password: "correct_himono");
+  Ingredient incorrectHimono = Ingredient(
+      name: "腐った粉末",
+      image: "images/items/correct_himono.png",
+      password: "incorrect_himono");
   Ingredient monosashiUo = Ingredient(
       name: "mo no sa shi u o",
       image: "images/items/monosashi_uo.png",
@@ -163,6 +162,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 //room3
   Ingredient goldenLiquid = Ingredient(
       name: "goldenLiquid",
+      image: "images/monster.png",
+      password: "liquid-0123");
+  Ingredient incorrectLiquid = Ingredient(
+      name: "incorrectLiquid",
       image: "images/monster.png",
       password: "liquid-0123");
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
@@ -224,7 +227,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       makeInitInventoryOutline();
       roomNotifier.setRoom(startRoom);
 
-      canSend = (startRoom == 1);
+      canSend = (startRoom == 0);
     });
   }
 
@@ -239,6 +242,27 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   void pick(String password) {
     switch (ref.watch(roomProvider)) {
+      case 0:
+        setState(() {
+          isSuccessfulPick = key.addToInventory(ref, password);
+        });
+        isSuccessfulUse = keyhole.showSelectItemsDialog(
+            password,
+            keyhole.useKeyhole,
+            ref,
+            null,
+            null,
+            [key],
+            showTutorialClearDialog);
+        if (isSuccessfulPick) {
+          showPickedDialog();
+          isSuccessfulPick = false;
+        } else if (isSuccessfulUse) {
+          isSuccessfulUse = false;
+        } else {
+          showPickFailedDialog();
+        }
+        break;
       case 1:
         setState(() {
           isSuccessfulPick = (redEgg.addToInventory(ref, password) ||
@@ -254,9 +278,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             checker1.useCompleteMixer,
             ref,
             correctCrashedEgg,
-            [],
+            incorrectCrashedEgg,
             [yellowEgg],
-            showFirstClearDialog);
+            showFirstClearDialog,
+            showUseFailedDialog);
 
         if (isSuccessfulPick) {
           showPickedDialog();
@@ -270,10 +295,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
       case 2:
         setState(() {
-          isSuccessfulPick = himono1.addToInventory(ref, password) ||
-              himono2.addToInventory(ref, password) ||
-              himono3.addToInventory(ref, password) ||
-              monosashiUo.addToInventory(ref, password) ||
+          isSuccessfulPick = monosashiUo.addToInventory(ref, password) ||
               haburashiModoki.addToInventory(ref, password) ||
               rizuminori.addToInventory(ref, password) ||
               masanba.addToInventory(ref, password) ||
@@ -291,10 +313,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             password,
             mixer1.useCompleteMixer,
             ref,
-            goldenHimono,
-            [],
+            correctHimono,
+            incorrectHimono,
             [masanba, tomaTomato, kinnoMi],
-            showSecondClearDialog);
+            showSecondClearDialog,
+            showUseFailedDialog);
 
         if (isSuccessfulPick) {
           showPickedDialog();
@@ -319,21 +342,43 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         });
 
         isSuccessfulUse = lightMixer.showSelectItemsDialog(
-                password, lightMixer.useLightMixer, ref) ||
+                password,
+                lightMixer.useLightMixer,
+                ref,
+                null,
+                null,
+                null,
+                null,
+                showUseFailedDialog) ||
             lightSeparator.showSelectItemsDialog(
-                password, lightSeparator.useLightSeparator, ref) ||
+                password,
+                lightSeparator.useLightSeparator,
+                ref,
+                null,
+                null,
+                null,
+                null,
+                showUseFailedDialog) ||
             lightMixer.showSelectItemsDialog(
-                password, colorSeparator.useColorSeparator, ref) ||
-            colorMixer.showSelectItemsDialog(
-                password, colorMixer.useColorMixer, ref) ||
+                password,
+                colorSeparator.useColorSeparator,
+                ref,
+                null,
+                null,
+                null,
+                null,
+                showUseFailedDialog) ||
+            colorMixer.showSelectItemsDialog(password, colorMixer.useColorMixer,
+                ref, null, null, null, null, showUseFailedDialog) ||
             blackAndWhiteMixer.showSelectItemsDialog(
                 password,
                 blackAndWhiteMixer.useCompleteMixer,
                 ref,
                 goldenLiquid,
-                [],
+                incorrectLiquid,
                 [blackLiquid, whiteLiquid],
-                showThirdClearDialog);
+                showThirdClearDialog,
+                showUseFailedDialog);
 
         if (isSuccessfulPick) {
           //受け取ったときの処理
@@ -405,8 +450,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: const Text("GET",
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            title: const Center(
+              child: Text("GET",
+                  style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            ),
             content: SizedBox(
               width: 200,
               height: 300,
@@ -443,7 +490,43 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 200, height: 30),
-                  Text("インベントリが満タンか、正しくないQRコードを読み込みました。"),
+                  Text("正しくないQRコードを読み込みました。"),
+                  Text(
+                    "違う部屋のQRコードやすでに持っているアイテムのQRコードを読み込んだ、またはインベントリが満タンであることが考えられます。",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("OK"),
+                  onPressed: () => Navigator.of(context).pop()),
+            ],
+          );
+        });
+  }
+
+  void showUseFailedDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("MISS",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: const SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 200, height: 30),
+                  Text("正しくないアイテムを投入しました。"),
+                  Text(
+                    "問題や指示に従って投入してください。",
+                    style: TextStyle(fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -598,6 +681,34 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
 //クリア時のポップアップ
+  void showTutorialClearDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("チュートリアルクリア!!",
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+            content: const SizedBox(
+              width: 200,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")],
+              ),
+            ),
+            actions: <Widget>[
+              // ボタン領域
+              TextButton(
+                  child: const Text("次へ"),
+                  onPressed: () {
+                    ref.read(roomProvider.notifier).increment();
+                    Navigator.of(context).pop();
+                  })
+            ],
+          );
+        });
+  }
+
   void showFirstClearDialog() {
     showDialog(
         context: context,
@@ -642,7 +753,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   const Text("この先は二組に分かれて進んでください",
                       style:
                           TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-                  (startRoom == 1)
+                  (startRoom == 0)
                       ? const Text("Aの部屋に進んでください")
                       : const Text("Bの部屋に進んでください")
                 ],
@@ -653,7 +764,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               TextButton(
                   child: const Text("OK"),
                   onPressed: () {
-                    ref.watch(roomProvider.notifier).setRoom(3);
+                    ref.read(roomProvider.notifier).increment();
                     Navigator.of(context).pop();
                   }),
             ],
@@ -685,7 +796,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   child: const Text("次へ"),
                   onPressed: () {
                     setState(() {
-                      roomNotifier.setRoom(4);
+                      ref.read(roomProvider.notifier).increment();
                     });
                     Navigator.of(context).pop();
                     showReadStoryDialog();

@@ -15,26 +15,21 @@ class MainAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
 }
 
 class _MainAppbarState extends ConsumerState<MainAppbar> {
-  late int room;
+  int room = 0;
   String time = "2:00";
   int startMin = 2;
   int min = 1;
   int sec = 59;
   List<Widget> hintWidgets = [];
+  List<String> hints = [];
   bool hintAvailable = false;
   bool isInit = true;
-  List<List<String>> hints = [
-    ["1-1", "1-2", "1-3"],
-    ["2-1", "2-2", "2-3"],
-    ["3-1", "3-2", "3-3"]
-  ];
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
       room = ref.watch(roomProvider);
-      runTimer();
     });
   }
 
@@ -86,26 +81,28 @@ class _MainAppbarState extends ConsumerState<MainAppbar> {
   }
 
   Future runTimer() async {
-    for (int i = 1; i <= 3; i++) {
-      for (min = startMin - 1; min >= 0; min--) {
-        for (sec = 59; sec >= 0; sec--) {
-          await Future.delayed(const Duration(seconds: 1));
-          if (mounted) {
-            setState(() {
-              time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
-            });
-          } else {
-            return;
+    if (room != 0 && room != 4) {
+      for (int i = 1; i <= hints.length; i++) {
+        for (min = startMin - 1; min >= 0; min--) {
+          for (sec = 59; sec >= 0; sec--) {
+            await Future.delayed(const Duration(seconds: 1));
+            if (mounted) {
+              setState(() {
+                time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
+              });
+            } else {
+              return;
+            }
           }
         }
+        addHint(i);
       }
-      addHint(i);
     }
   }
 
   void addHint(int hintNum) {
     hintAvailable = true;
-    String availableHint = hints[room - 1][hintNum - 1];
+    String availableHint = hints[hintNum - 1];
     hintWidgets.add(Text(
       "ヒント$hintNum:",
       style: const TextStyle(fontWeight: FontWeight.w600),
@@ -121,11 +118,18 @@ class _MainAppbarState extends ConsumerState<MainAppbar> {
       (previous, next) {
         startTimer();
         Future.delayed(Duration.zero, () {
+          hints = RoomData.roomData(ref.watch(roomProvider))!.hints;
+          hintWidgets.clear();
+          if (isInit) {
+            runTimer();
+            isInit = false;
+          }
           setState(() {});
         });
       },
     );
     return AppBar(
+      backgroundColor: Colors.lightBlue[200],
       title: Text(RoomData.roomData(ref.watch(roomProvider))!.title),
       actions: [
         const Text("ヒント追加まで"),

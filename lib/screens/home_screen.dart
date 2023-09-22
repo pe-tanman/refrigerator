@@ -35,7 +35,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   bool canSend = false;
   int room = 1;
   int startRoom = 1;
-  String inventoryImgPath = "images/background/inventory_tile.png";
+  String inventoryImgPath = "assets/images/background/inventory_tile.png";
   List<Ingredient> objectInventory = [];
   List<Widget> widgetInventory = [];
   List<Widget> displayInventory = [];
@@ -55,118 +55,130 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   //room0
   Ingredient key = Ingredient(
-      name: "鍵", image: "images/items/key.png", password: "key-5281");
+      name: "鍵", image: "assets/images/items/key.png", password: "key-5281");
   Tools keyhole = Tools(
       password: "keyhole",
       capacity: [1],
-      image: "images/tools/keyhole.png",
+      image: "assets/images/tools/keyhole.png",
       actionName: "解錠");
   //room1
   Ingredient redEgg = Ingredient(
-      name: "赤の卵", image: "images/items/red_egg.png", password: "red-egg");
+      name: "赤の卵",
+      image: "assets/images/items/red_egg.png",
+      password: "red-egg");
   Ingredient blueEgg = Ingredient(
-      name: "青の卵", image: "images/items/blue_egg.png", password: "blue-egg");
+      name: "青の卵",
+      image: "assets/images/items/blue_egg.png",
+      password: "blue-egg");
   Ingredient yellowEgg = Ingredient(
       name: "黄色の卵",
-      image: "images/items/yellow_egg.png",
+      image: "assets/images/items/yellow_egg.png",
       password: "yellow-egg");
   Ingredient brownEgg = Ingredient(
-      name: "茶色の卵", image: "images/items/brown_egg.png", password: "brown-egg");
+      name: "茶色の卵",
+      image: "assets/images/items/brown_egg.png",
+      password: "brown-egg");
   Ingredient purpleEgg = Ingredient(
       name: "紫の卵",
-      image: "images/items/purple_egg.png",
+      image: "assets/images/items/purple_egg.png",
       password: "purple-egg");
   Ingredient greenEgg = Ingredient(
-      name: "緑の卵", image: "images/items/green_egg.png", password: "green-egg");
+      name: "緑の卵",
+      image: "assets/images/items/green_egg.png",
+      password: "green-egg");
   Ingredient blackEgg = Ingredient(
-      name: "黒の卵", image: "images/items/black_egg.png", password: "black-egg");
+      name: "黒の卵",
+      image: "assets/images/items/black_egg.png",
+      password: "black-egg");
   Ingredient correctCrashedEgg = Ingredient(
       name: "輝く卵",
-      image: "images/items/correct_crashed_egg.png",
+      image: "assets/images/items/correct_crashed_egg.png",
       password: "correct-egg-52");
   Ingredient incorrectCrashedEgg = Ingredient(
       name: "腐った卵",
-      image: "images/items/incorrect_crashed_egg.png",
+      image: "assets/images/items/incorrect_crashed_egg.png",
       password: "incorrect-egg");
   Tools checker1 = Tools(
       capacity: [1],
       password: "checker-1263",
-      image: "images/tools/bowl.png",
+      image: "assets/images/tools/bowl.png",
       actionName: "割って確認");
   //room2
   Tools mixer1 = Tools(
       capacity: [3],
       password: "mixer1-7213",
-      image: "images/tools/mortar.png",
+      image: "assets/images/tools/mortar.png",
       actionName: "混合");
   Ingredient correctHimono = Ingredient(
-      name: "良薬のような粉末",
-      image: "images/items/correct_himono.png",
+      name: "ときめく粉末",
+      image: "assets/images/items/correct_himono.png",
       password: "correct_himono");
   Ingredient incorrectHimono = Ingredient(
       name: "腐った粉末",
-      image: "images/items/correct_himono.png",
+      image: "assets/images/items/correct_himono.png",
       password: "incorrect_himono");
   Ingredient monosashiUo = Ingredient(
       name: "mo no sa shi u o",
-      image: "images/items/monosashi_uo.png",
+      image: "assets/images/items/monosashi_uo.png",
       password: "monosashi-uo",
       detail:
           "mo no sa shi u o\nka na ra zu ki ma ttsu ta o o ki sa ni na ru\no to na ni na ru to 5 0 c m ni na ru");
   Ingredient akakiGoi = Ingredient(
       name: "N xn xv tb v",
-      image: "images/items/akaki_goi.png",
+      image: "assets/images/items/akaki_goi.png",
       password: "akaki-goi");
   Ingredient haburashiModoki = Ingredient(
       name: "Un oh en fuv zb gb xv",
-      image: "images/items/haburashi_modoki.png",
+      image: "assets/images/items/haburashi_modoki.png",
       password: "haburashi-modoki");
   Ingredient masanba = Ingredient(
       name: "Zn fu a on",
-      image: "images/items/masanba.png",
+      image: "assets/images/items/masanba.png",
       password: "masanba");
   Ingredient rizuminori = Ingredient(
       name: "Ev mh zv ab ev",
-      image: "images/items/rizuminori.png",
+      image: "assets/images/items/rizuminori.png",
       password: "rizuminori");
   Ingredient medamaDake = Ingredient(
       name: "Zr qn zn qn xr",
-      image: "images/items/medama_dake.png",
+      image: "assets/images/items/medama_dake.png",
       password: "medamadake");
   Ingredient akaDama = Ingredient(
       name: "N xn qn zn",
-      image: "images/items/aka_dama.png",
+      image: "assets/images/items/aka_dama.png",
       password: "aka-dama");
   Ingredient tomaTomato = Ingredient(
       name: "Gl zn gl zn gl",
-      image: "images/items/toma_tomato.png",
+      image: "assets/images/items/toma_tomato.png",
       password: "toma-tomato");
   Ingredient shiragaDake = Ingredient(
       name: "Fuv en tn gn xr",
-      image: "images/items/shiraga_dake.png",
+      image: "assets/images/items/shiraga_dake.png",
       password: "shiraga-dake");
   Ingredient kinnoMi = Ingredient(
       name: "Xv a ab zv",
-      image: "images/items/kinno_mi.png",
+      image: "assets/images/items/kinno_mi.png",
       password: "kinno-mi");
   Ingredient sotennoMi = Ingredient(
       name: "Fb gr a ab zv",
-      image: "images/items/sotenno_mi.png",
+      image: "assets/images/items/sotenno_mi.png",
       password: "sotenno-mi");
   Ingredient tamichi = Ingredient(
-      name: "Gn zv gv", image: "images/items/tamichi.png", password: "tamichi");
+      name: "Gn zv gv",
+      image: "assets/images/items/tamichi.png",
+      password: "tamichi");
   Ingredient hakoBudou = Ingredient(
       name: "Un xb oh qb h",
-      image: "images/items/hako_budou.png",
+      image: "assets/images/items/hako_budou.png",
       password: "hako-budou");
 //room3
   Ingredient goldenLiquid = Ingredient(
-      name: "goldenLiquid",
-      image: "images/monster.png",
+      name: "輝く液体",
+      image: "assets/images/items/monster.png",
       password: "liquid-0123");
   Ingredient incorrectLiquid = Ingredient(
-      name: "incorrectLiquid",
-      image: "images/monster.png",
+      name: "腐った液体",
+      image: "assets/images/ items/monster.png",
       password: "liquid-0123");
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
   Ingredient greenLiquid = RGB(0, 1, 0).liquid;
@@ -180,27 +192,27 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Tools lightMixer = Tools(
       capacity: [2, 3],
       password: "lightMixer",
-      image: "images/tools/mixer.png",
+      image: "assets/images/tools/mixer.png",
       actionName: "光の混合");
   Tools lightSeparator = Tools(
       capacity: [1],
       password: "lightSeparator",
-      image: "images/tools/mixer.png",
+      image: "assets/images/tools/mixer.png",
       actionName: "光の分解");
   Tools colorMixer = Tools(
       capacity: [2, 3],
       password: "colorMixer",
-      image: "images/tools/mixer.png",
+      image: "assets/images/tools/mixer.png",
       actionName: "色の混合");
   Tools colorSeparator = Tools(
       capacity: [1],
-      password: "colorMixer",
-      image: "images/tools/mixer.png",
+      password: "colorSeparator",
+      image: "assets/images/tools/mixer.png",
       actionName: "色の分解");
   Tools blackAndWhiteMixer = Tools(
       capacity: [2],
       password: "mixer2-7113",
-      image: "images/tools/mixer.png",
+      image: "assets/images/tools/mixer.png",
       actionName: "混合");
 
   @override
@@ -216,7 +228,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       roomNotifier = ref.watch(roomProvider.notifier);
       contextNotifier = ref.watch(mainContextProvider.notifier);
       recognitionNotifier = ref.watch(recognitionProvider.notifier);
-
       objectInventory = ref.watch(objectInventoryProvider);
       widgetInventory = ref.watch(widgetInventoryProvider);
       //displayInventory = ref.watch(displayInventoryProvider);
@@ -370,6 +381,15 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 showUseFailedDialog) ||
             colorMixer.showSelectItemsDialog(password, colorMixer.useColorMixer,
                 ref, null, null, null, null, showUseFailedDialog) ||
+            colorSeparator.showSelectItemsDialog(
+                password,
+                colorSeparator.useColorSeparator,
+                ref,
+                null,
+                null,
+                null,
+                null,
+                showUseFailedDialog) ||
             blackAndWhiteMixer.showSelectItemsDialog(
                 password,
                 blackAndWhiteMixer.useCompleteMixer,
@@ -684,6 +704,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   void showTutorialClearDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return AlertDialog(
             title: const Text("チュートリアルクリア!!",
@@ -712,6 +733,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   void showFirstClearDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return AlertDialog(
             title: const Text("タマゴの部屋クリア!!",
@@ -740,9 +762,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   void showSecondClearDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return AlertDialog(
-            title: const Text("野菜室クリア!!",
+            title: const Text("2の部屋クリア!!",
                 style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
             content: SizedBox(
               width: 200,
@@ -775,9 +798,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   void showThirdClearDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return AlertDialog(
-            title: const Text("調理室クリア!!",
+            title: const Text("3の部屋クリア!!",
                 style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
             content: const SizedBox(
               width: 200,
@@ -939,6 +963,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isInit) {
         ref.read(mainContextProvider.notifier).setContext(context);
+        ref.read(roomProvider.notifier).setRoom(startRoom);
         isInit = false;
       }
     });
@@ -981,8 +1006,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   borderRadius: BorderRadius.circular(30),
                   color: Colors.lightBlue.shade300,
                 ),
-                child:
-                    (room == 3) ? _buildResetButton() : _buildTrashBoxButton(),
+                child: (ref.watch(roomProvider) == 3)
+                    ? _buildResetButton()
+                    : _buildTrashBoxButton(),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -1008,7 +1034,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 20),
               Visibility(
-                visible: room == 3,
+                visible: ref.watch(roomProvider) == 3,
                 child: _buildSendButton(),
               )
             ],

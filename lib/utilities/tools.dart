@@ -100,10 +100,13 @@ class Tools {
                             for (int i = selectedItems.length - 1;
                                 i >= 0;
                                 i--) {
-                              print(tags[i]);
-                              selectedIngredients.add(objectInventory[tags[i]]);
-                              objectInventoryNotifier.removeAt(tags[i]);
-                              widgetInventoryNotifier.removeAt(tags[i]);
+                              print("tag" + selectedItems[i].toString());
+                              selectedIngredients
+                                  .add(objectInventory[selectedItems[i]]);
+                              objectInventoryNotifier
+                                  .removeAt(selectedItems[i]);
+                              widgetInventoryNotifier
+                                  .removeAt(selectedItems[i]);
                             }
                             //更新
                             recognitionNotifier.increment();
@@ -183,8 +186,11 @@ class Tools {
     }
   }
 
-  void useLightMixer(List<Ingredient> selectedIngredients, WidgetRef ref,
-      Function? showIncorrectDialog) {
+  void useLightMixer(
+    List<Ingredient> selectedIngredients,
+    Function? showIncorrectDialog,
+    WidgetRef ref,
+  ) {
     ///mix
     late Ingredient mixedLiquid;
     if (selectedIngredients.length == 2) {
@@ -221,8 +227,11 @@ class Tools {
     }
   }
 
-  void useLightSeparator(List<Ingredient> selectedIngredients, WidgetRef ref,
-      Function? showIncorrectDialog) {
+  void useLightSeparator(
+    List<Ingredient> selectedIngredients,
+    Function? showIncorrectDialog,
+    WidgetRef ref,
+  ) {
     //separate
     if (ref.read(objectInventoryProvider).length <
             4 - selectedIngredients.length &&
@@ -241,8 +250,11 @@ class Tools {
     }
   }
 
-  void useColorMixer(List<Ingredient> selectedIngredients, WidgetRef ref,
-      Function? showIncorrectDialog) {
+  void useColorMixer(
+    List<Ingredient> selectedIngredients,
+    Function? showIncorrectDialog,
+    WidgetRef ref,
+  ) {
     ///mix
     late Ingredient mixedLiquid;
 
@@ -274,8 +286,8 @@ class Tools {
     }
   }
 
-  void useColorSeparator(List<Ingredient> selectedIngredients, WidgetRef ref,
-      Function? showIncorrectDialog) {
+  void useColorSeparator(List<Ingredient> selectedIngredients,
+      Function? showIncorrectDialog, WidgetRef ref) {
     ///separate
     if (ref.read(objectInventoryProvider).length <
             4 - selectedIngredients.length &&

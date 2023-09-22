@@ -18,7 +18,7 @@ class Ingredient {
   String password;
   String? detail;
   RGB? rgb;
-  String inventoryImgPath = "images/background/inventory_tile.png";
+  String inventoryImgPath = "assets/images/background/inventory_tile.png";
 
   bool addToInventory(WidgetRef ref, [String? ans]) {
     List<Ingredient> objectInventory = ref.read(objectInventoryProvider);

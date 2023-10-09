@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:refrigerator/provider/tool_provider.dart';
 import 'package:refrigerator/screens/home_screen.dart';
 import 'package:refrigerator/widgets/main_drawer.dart';
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends ConsumerWidget {
   static const routeName = "/start-screen";
 
   StartScreen({
@@ -10,7 +12,7 @@ class StartScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("スタート"),
@@ -67,7 +69,7 @@ class StartScreen extends StatelessWidget {
                         elevation: 13),
                     onPressed: () {
                       Navigator.pushNamed(context, HomeScreen.routeName,
-                          arguments: HomeScreenArguments(room: 3));
+                          arguments: HomeScreenArguments(room: 2));
                       showDialog(
                           barrierDismissible: false,
                           context: context,
@@ -83,6 +85,9 @@ class StartScreen extends StatelessWidget {
                                 TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
+                                      ref
+                                          .read(roomProvider.notifier)
+                                          .increment();
                                     },
                                     child: const Text("3の部屋に到着した")),
                               ],

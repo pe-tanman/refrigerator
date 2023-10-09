@@ -10,7 +10,7 @@ class RGB {
         color = Colors.black;
         liquid = Ingredient(
             name: "黒の魔剤",
-            image: "images/items/black_liquid.png",
+            image: "assets/images/items/black_liquid.png",
             password: "black-7196",
             rgb: this);
         break;
@@ -18,7 +18,7 @@ class RGB {
         color = Colors.red;
         liquid = Ingredient(
             name: "赤の魔剤",
-            image: "images/items/red_liquid.png",
+            image: "assets/images/items/red_liquid.png",
             password: "red-5290",
             rgb: this);
         break;
@@ -26,7 +26,7 @@ class RGB {
         color = Colors.green;
         liquid = Ingredient(
             name: "緑の魔剤",
-            image: "images/items/green_liquid.png",
+            image: "assets/images/items/green_liquid.png",
             password: "green-7129",
             rgb: this);
         break;
@@ -34,7 +34,7 @@ class RGB {
         color = Colors.blue;
         liquid = Ingredient(
             name: "青の魔剤",
-            image: "images/items/blue_liquid.png",
+            image: "assets/images/items/blue_liquid.png",
             password: "blue-0975",
             rgb: this);
         break;
@@ -42,7 +42,7 @@ class RGB {
         color = Colors.yellow;
         liquid = Ingredient(
             name: "黄色の魔剤",
-            image: "images/items/yellow_liquid.png",
+            image: "assets/images/items/yellow_liquid.png",
             password: "yellow-7127",
             rgb: this);
         break;
@@ -50,7 +50,7 @@ class RGB {
         color = Colors.pink;
         liquid = Ingredient(
             name: "マゼンタの魔剤",
-            image: "images/items/magenta_liquid.png",
+            image: "assets/images/items/magenta_liquid.png",
             password: "magenta-1237",
             rgb: this);
         break;
@@ -58,7 +58,7 @@ class RGB {
         color = Colors.cyan;
         liquid = Ingredient(
             name: "シアンの魔剤",
-            image: "images/items/cyan_liquid.png",
+            image: "assets/images/items/cyan_liquid.png",
             password: "cyan-1267",
             rgb: this);
         break;
@@ -66,7 +66,7 @@ class RGB {
         color = Colors.white;
         liquid = Ingredient(
             name: "白の魔剤",
-            image: "images/items/white_liquid.png",
+            image: "assets/images/items/white_liquid.png",
             password: "white-1923",
             rgb: this);
         break;
@@ -99,7 +99,6 @@ class RGB {
     return result;
   }
 
-//TODO:違うものが入力されたときのことを考えると外でif判定したほうがいいのかもしれない
   Ingredient mixColor(other) {
     late RGB rgb;
     if ((r + other.r) * (g + other.g) * (b + other.b) != 0 &&
@@ -111,19 +110,15 @@ class RGB {
   }
 
   List<Ingredient> separateColor() {
-    List<Ingredient> result = [
-      RGB(1, 1, 0).liquid,
-      RGB(1, 0, 1).liquid,
-      RGB(0, 1, 1).liquid
-    ];
-    if (r == 1) {
-      result.remove(RGB(0, 1, 1).liquid);
+    List<Ingredient> result = [];
+    if (r == 0) {
+      result.add(RGB(0, 1, 1).liquid);
     }
-    if (g == 1) {
-      result.remove(RGB(1, 0, 1).liquid);
+    if (g == 0) {
+      result.add(RGB(1, 0, 1).liquid);
     }
-    if (b == 1) {
-      result.remove(RGB(0, 1, 1).liquid);
+    if (b == 0) {
+      result.add(RGB(1, 1, 0).liquid);
     }
     return result;
   }

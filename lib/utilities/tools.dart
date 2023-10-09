@@ -96,11 +96,10 @@ class Tools {
                     onPressed: (capacity.contains(selectedItems.length))
                         ? () {
                             Navigator.of(context).pop();
-
+                            selectedItems.sort((a, b) => a.compareTo(b));
                             for (int i = selectedItems.length - 1;
                                 i >= 0;
                                 i--) {
-                              print("tag" + selectedItems[i].toString());
                               selectedIngredients
                                   .add(objectInventory[selectedItems[i]]);
                               objectInventoryNotifier
@@ -159,6 +158,33 @@ class Tools {
     }
   }
 
+  void useBlackAndWhiteMixer(
+      Ingredient correctOutput,
+      Ingredient incorrectOutput,
+      List<Ingredient> correctIngredients,
+      List<Ingredient> selectedIngredients,
+      Function? onPopupConfirmed,
+      Function? showIncorrectDialog,
+      WidgetRef ref) {
+    //mix
+    int rgb1 = selectedIngredients[0].rgb!.sum;
+    int rgb2 = selectedIngredients[1].rgb!.sum;
+    //正解時
+    if (rgb1 + rgb2 == 3 && rgb1 * rgb2 == 0) {
+      correctOutput.addToCompleteInventory(ref);
+      if (onPopupConfirmed != null) {
+        onPopupConfirmed();
+      }
+    } else {
+      if (showIncorrectDialog != null) {
+        for (Ingredient ingredient in selectedIngredients) {
+          ingredient.addToInventory(ref);
+        }
+        showIncorrectDialog();
+      }
+    }
+  }
+
   void useCompleteMixer(
       Ingredient correctOutput,
       Ingredient incorrectOutput,
@@ -174,14 +200,16 @@ class Tools {
     //正解時
     if (listEquals(correctIngredients, selectedIngredients)) {
       correctOutput.addToCompleteInventory(ref);
-
       if (onPopupConfirmed != null) {
         onPopupConfirmed();
-      } else {
-        incorrectOutput.addToInventory(ref);
-        if (showIncorrectDialog != null) {
-          showIncorrectDialog();
+      }
+    } else {
+      incorrectOutput.addToInventory(ref);
+      if (showIncorrectDialog != null) {
+        for (Ingredient ingredient in selectedIngredients) {
+          ingredient.addToInventory(ref);
         }
+        showIncorrectDialog();
       }
     }
   }
@@ -218,11 +246,11 @@ class Tools {
           return;
         }
       }
-      if (showIncorrectDialog != null) {
-        showIncorrectDialog();
-      }
     }
     if (showIncorrectDialog != null) {
+      for (Ingredient ingredient in selectedIngredients) {
+        ingredient.addToInventory(ref);
+      }
       showIncorrectDialog();
     }
   }
@@ -246,6 +274,9 @@ class Tools {
       }
     }
     if (showIncorrectDialog != null) {
+      for (Ingredient ingredient in selectedIngredients) {
+        ingredient.addToInventory(ref);
+      }
       showIncorrectDialog();
     }
   }
@@ -282,6 +313,9 @@ class Tools {
       }
     }
     if (showIncorrectDialog != null) {
+      for (Ingredient ingredient in selectedIngredients) {
+        ingredient.addToInventory(ref);
+      }
       showIncorrectDialog();
     }
   }
@@ -302,6 +336,9 @@ class Tools {
       }
     }
     if (showIncorrectDialog != null) {
+      for (Ingredient ingredient in selectedIngredients) {
+        ingredient.addToInventory(ref);
+      }
       showIncorrectDialog();
     }
   }

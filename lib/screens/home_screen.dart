@@ -11,6 +11,7 @@ import 'package:refrigerator/utilities/ingredients.dart';
 import 'package:refrigerator/utilities/tools.dart';
 import 'package:refrigerator/utilities/RGB.dart';
 import "package:refrigerator/data/room_data.dart";
+import 'package:audioplayers/audioplayers.dart';
 
 class HomeScreenArguments {
   final int room;
@@ -42,6 +43,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   List<Ingredient> completeObjectInventory = [];
   List<Widget> completeWidgetInventory = [];
   int recognition = 0;
+  final audioPlayer = AudioPlayer();
   var objectInventoryNotifier;
   var widgetInventoryNotifier;
   var completeObjectInventoryNotifier;
@@ -75,8 +77,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       image: "assets/images/items/yellow_egg.png",
       password: "yellow-egg");
   Ingredient brownEgg = Ingredient(
-      name: "茶色の卵",
-      image: "assets/images/items/brown_egg.png",
+      name: "桃色の卵",
+      image: "assets/images/items/pink_egg.png",
       password: "brown-egg");
   Ingredient purpleEgg = Ingredient(
       name: "紫の卵",
@@ -87,8 +89,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       image: "assets/images/items/green_egg.png",
       password: "green-egg");
   Ingredient blackEgg = Ingredient(
-      name: "黒の卵",
-      image: "assets/images/items/black_egg.png",
+      name: "雲色の卵",
+      image: "assets/images/items/clown_egg.png",
       password: "black-egg");
   Ingredient correctCrashedEgg = Ingredient(
       name: "輝く卵",
@@ -172,14 +174,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       image: "assets/images/items/hako_budou.png",
       password: "hako-budou");
 //room3
-  Ingredient goldenLiquid = Ingredient(
-      name: "輝く液体",
-      image: "assets/images/items/monster.png",
+  Ingredient correctLiquid = Ingredient(
+      name: "エメラルドの液体",
+      image: "assets/images/items/correct_liquid.png",
       password: "liquid-0123");
   Ingredient incorrectLiquid = Ingredient(
       name: "腐った液体",
-      image: "assets/images/ items/monster.png",
-      password: "liquid-0123");
+      image: "assets/images/items/incorrect_liquid.png",
+      password: "liquid-4928");
   Ingredient redLiquid = RGB(1, 0, 0).liquid;
   Ingredient greenLiquid = RGB(0, 1, 0).liquid;
   Ingredient blueLiquid = RGB(0, 0, 1).liquid;
@@ -190,30 +192,34 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Ingredient whiteLiquid = RGB(1, 1, 1).liquid;
 
   Tools lightMixer = Tools(
-      capacity: [2, 3],
+      capacity: [3],
       password: "lightMixer",
-      image: "assets/images/tools/mixer.png",
+      image: "assets/images/tools/mixer.jpg",
       actionName: "光の混合");
   Tools lightSeparator = Tools(
       capacity: [1],
       password: "lightSeparator",
-      image: "assets/images/tools/mixer.png",
+      image: "assets/images/tools/separator.jpg",
       actionName: "光の分解");
   Tools colorMixer = Tools(
-      capacity: [2, 3],
+      capacity: [3],
       password: "colorMixer",
-      image: "assets/images/tools/mixer.png",
+      image: "assets/images/tools/mixer.jpg",
       actionName: "色の混合");
   Tools colorSeparator = Tools(
       capacity: [1],
       password: "colorSeparator",
-      image: "assets/images/tools/mixer.png",
+      image: "assets/images/tools/separator.jpg",
       actionName: "色の分解");
   Tools blackAndWhiteMixer = Tools(
       capacity: [2],
       password: "mixer2-7113",
-      image: "assets/images/tools/mixer.png",
+      image: "assets/images/tools/mixer.jpg",
       actionName: "混合");
+
+  //room 4 image
+  Ingredient eye = Ingredient(
+      name: "こびとの眼球", image: "assets/images/items/eye.png", password: "eye");
 
   @override
   void initState() {
@@ -392,13 +398,15 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 showUseFailedDialog) ||
             blackAndWhiteMixer.showSelectItemsDialog(
                 password,
-                blackAndWhiteMixer.useCompleteMixer,
+                blackAndWhiteMixer.useBlackAndWhiteMixer,
                 ref,
-                goldenLiquid,
+                correctLiquid,
                 incorrectLiquid,
                 [blackLiquid, whiteLiquid],
                 showThirdClearDialog,
-                showUseFailedDialog);
+                showUseFailedDialog) ||
+            onReadQuestionQR(password) ||
+            onReadMoveQR(password);
 
         if (isSuccessfulPick) {
           //受け取ったときの処理
@@ -411,7 +419,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           showPickFailedDialog();
         }
         break;
-      case 4:
+      case 6:
+        onReadEndingQR(password);
+        break;
     }
   }
 
@@ -451,6 +461,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 image: AssetImage(inventoryImgPath), fit: BoxFit.cover)),
       ));
     }
+    completeWidgetInventoryNotifier.clear();
     for (int i = 0; i <= 3; i++) {
       completeWidgetInventory.add(Container(
         width: 180,
@@ -670,6 +681,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         onPressed: () {
           showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (_) => AlertDialog(
                     title: const Text("送信するアイテムを選択"),
                     content: SizedBox(
@@ -702,129 +714,215 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
 //クリア時のポップアップ
   void showTutorialClearDialog() {
+    audioPlayer.play(AssetSource("clear_audio.mp3"));
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          return AlertDialog(
-            title: const Text("チュートリアルクリア!!",
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: const SizedBox(
-              width: 200,
-              height: 300,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")],
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 200,
+                  height: 300,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(
+                            'assets/images/background/clear_background.jpg'),
+                        fit: BoxFit.fill),
+                  ),
+                ),
               ),
-            ),
-            actions: <Widget>[
-              // ボタン領域
-              TextButton(
-                  child: const Text("次へ"),
-                  onPressed: () {
-                    ref.read(roomProvider.notifier).increment();
-                    Navigator.of(context).pop();
-                  })
+              AlertDialog(
+                title: const Text("チュートリアルクリア!!",
+                    style:
+                        TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+                content: const SizedBox(
+                  width: 200,
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")],
+                  ),
+                ),
+                actions: <Widget>[
+                  // ボタン領域
+                  TextButton(
+                      child: const Text("次へ"),
+                      onPressed: () {
+                        ref.read(roomProvider.notifier).increment();
+                        audioPlayer.stop();
+                        Navigator.of(context).pop();
+                      })
+                ],
+              ),
             ],
           );
         });
   }
 
   void showFirstClearDialog() {
+    audioPlayer.play(AssetSource("clear_audio.mp3"));
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          return AlertDialog(
-            title: const Text("タマゴの部屋クリア!!",
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: const SizedBox(
-              width: 200,
-              height: 300,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")],
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(
+                            'assets/images/background/clear_background.jpg'),
+                        fit: BoxFit.fill),
+                  ),
+                ),
               ),
-            ),
-            actions: <Widget>[
-              // ボタン領域
-              TextButton(
-                  child: const Text("次へ"),
-                  onPressed: () {
-                    ref.read(roomProvider.notifier).increment();
-                    Navigator.of(context).pop();
-                  })
+              AlertDialog(
+                title: const Text("1の部屋クリア!!",
+                    style:
+                        TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+                content: SizedBox(
+                  width: 200,
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      correctCrashedEgg.inventoryTile(),
+                      const Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  // ボタン領域
+                  TextButton(
+                      child: const Text("次へ"),
+                      onPressed: () {
+                        audioPlayer.stop();
+                        ref.read(roomProvider.notifier).increment();
+                        Navigator.of(context).pop();
+                      })
+                ],
+              )
             ],
           );
         });
   }
 
   void showSecondClearDialog() {
+    audioPlayer.play(AssetSource("clear_audio.mp3"));
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          return AlertDialog(
-            title: const Text("2の部屋クリア!!",
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: SizedBox(
-              width: 200,
-              height: 300,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("この先は二組に分かれて進んでください",
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-                  (startRoom == 0)
-                      ? const Text("Aの部屋に進んでください")
-                      : const Text("Bの部屋に進んでください")
-                ],
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(
+                            'assets/images/background/clear_background.jpg'),
+                        fit: BoxFit.fill),
+                  ),
+                ),
               ),
-            ),
-            actions: <Widget>[
-              // ボタン領域
-              TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    ref.read(roomProvider.notifier).increment();
-                    Navigator.of(context).pop();
-                  }),
+              AlertDialog(
+                title: const Text("2の部屋クリア!!",
+                    style:
+                        TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+                content: SizedBox(
+                  width: 200,
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      correctHimono.inventoryTile(),
+                      const Text("この先は二組に分かれて進んでください",
+                          style: TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.w600)),
+                      (startRoom == 0)
+                          ? const Text("Aの部屋に進んでください")
+                          : const Text("Bの部屋に進んでください")
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  // ボタン領域
+                  TextButton(
+                      child: const Text("OK"),
+                      onPressed: () {
+                        audioPlayer.stop();
+                        ref.read(roomProvider.notifier).increment();
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              )
             ],
           );
         });
   }
 
   void showThirdClearDialog() {
+    audioPlayer.play(AssetSource("clear_audio.mp3"));
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          return AlertDialog(
-            title: const Text("3の部屋クリア!!",
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
-            content: const SizedBox(
-              width: 200,
-              height: 300,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("もう一方の部屋にいる仲間に次の部屋へ進むよう指示してください。"),
-                  Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
-                ],
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(
+                            'assets/images/background/clear_background.jpg'),
+                        fit: BoxFit.fill),
+                  ),
+                ),
               ),
-            ),
-            actions: <Widget>[
-              // ボタン領域
-              TextButton(
-                  child: const Text("次へ"),
-                  onPressed: () {
-                    setState(() {
-                      ref.read(roomProvider.notifier).increment();
-                    });
-                    Navigator.of(context).pop();
-                    showReadStoryDialog();
-                  }),
+              AlertDialog(
+                title: const Text("3の部屋クリア!!",
+                    style:
+                        TextStyle(fontSize: 60, fontWeight: FontWeight.w600)),
+                content: SizedBox(
+                  width: 200,
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      correctLiquid.inventoryTile(),
+                      const Text(
+                          "もう一方の部屋にいる仲間に次の部屋へ進むよう指示してください。\n鍵の番号は両方471です。"),
+                      const Text("次の部屋へ進んでください\n逆走禁止:絶対にこの部屋へ戻らないでください。")
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  // ボタン領域
+                  TextButton(
+                      child: const Text("次へ"),
+                      onPressed: () {
+                        audioPlayer.stop();
+                        setState(() {
+                          ref.read(roomProvider.notifier).increment();
+                        });
+                        Navigator.of(context).pop();
+                        showReadStoryDialog();
+                      }),
+                ],
+              )
             ],
           );
         });
@@ -839,28 +937,30 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           //send
           canSend = false;
 
-          objectInventoryNotifier.removeAt(i);
-          widgetInventoryNotifier.removeAt(i);
-          recognitionNotifier.increment();
           Navigator.of(context).pop();
           //QRcode表示
           showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (_) => AlertDialog(
+              backgroundColor: Colors.white,
               title: const Text("送信用QRコード"),
               content: SizedBox(
-                width: 300,
-                height: 300,
+                width: 150,
+                height: 150,
                 child: QrImageView(
                   data: objectInventory[i].password,
                   version: QrVersions.auto,
-                  size: 200.0,
+                  size: 100.0,
                 ),
               ),
               actions: <Widget>[
                 TextButton(
                   child: const Text("閉じる"),
                   onPressed: () {
+                    objectInventoryNotifier.removeAt(i);
+                    widgetInventoryNotifier.removeAt(i);
+                    recognitionNotifier.increment();
                     Navigator.of(context).pop();
                   },
                 )
@@ -902,29 +1002,58 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         builder: (_) {
           return AlertDialog(
               title: const Text("選択"),
-              content: const Text("どちらのこびとを食材にしますか?"),
+              content: const SizedBox(
+                  width: 700,
+                  height: 500,
+                  child: Center(child: Text("どちらのこびとを食材にしますか?"))),
               actions: [
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      showWaitDialog();
-                      decision = "a";
+                      showDecisionConfirmDialog("こびとNo.37(自分)", "a");
                     },
-                    child: const Text("こびとA")),
+                    child: const Text("こびとNo.37(自分)")),
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      showWaitDialog();
-                      decision = "b";
+                      showDecisionConfirmDialog("こびとNo.547(相手)", "b");
                     },
-                    child: const Text("こびとB"))
+                    child: const Text("こびとNo.547(相手)"))
               ]);
         });
-  } //次の部屋にargumentとして残してもいいかも
+  } //次
+
+  void showDecisionConfirmDialog(String message, String localDecision) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("確認"),
+            content: Text("本当に$messageを食材にしますか?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("キャンセル"),
+              ),
+              TextButton(
+                onPressed: () {
+                  eye.addToCompleteInventory(ref);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  showWaitDialog();
+                  decision = localDecision;
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        });
+  } // の部屋にargumentとして残してもいいかも
 
   void showWaitDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return AlertDialog(
               title: const Text("次の部屋に進んでください"),
@@ -933,7 +1062,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      showDecisionDialog();
+                      ref.read(roomProvider.notifier).increment();
+                      ref.read(roomProvider.notifier).increment();
                     },
                     child: const Text("OK"))
               ]);
@@ -941,17 +1071,30 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void onReadEndingQR(String ans) {
-    if (ans == "moveToQuestion") {
-      Navigator.of(context)
-          .pushNamed(EndingScreen.routeName, arguments: decision);
+    if (ans == "moveToEnding") {
+      Navigator.of(context).pushNamed(EndingScreen.routeName,
+          arguments: EndingScreenArguments(decision: decision));
     }
   }
 
-  //room4b
-  void onReadQuestionQR(String ans) {
-    if (ans == "moveToQuestion") {
-      Navigator.of(context).pushNamed(Room4bScreen.routeName);
+  bool onReadMoveQR(String ans) {
+    if (ans == "moveTo4") {
+      correctLiquid.addToCompleteInventory(ref);
+      showThirdClearDialog();
+      return true;
     }
+    return false;
+  }
+
+  //room4b
+  bool onReadQuestionQR(String ans) {
+    if (ans == "moveToQuestion") {
+      ref.read(roomProvider.notifier).increment();
+      ref.read(roomProvider.notifier).increment();
+      Navigator.of(context).pushNamed(Room4bScreen.routeName);
+      return true;
+    }
+    return false;
   }
 
   @override

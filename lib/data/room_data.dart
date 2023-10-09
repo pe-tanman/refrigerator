@@ -15,13 +15,13 @@ class RoomData {
   static const RoomDetailData firstRoom = RoomDetailData(
       title: "1の部屋",
       imgPath: "assets/images/background/1stStage_background.png",
-      hints: ["茶色の卵は正直です。", "", "答え:黄色の卵"]);
+      hints: ["雲色の卵は正直です。", "", "答え:黄色の卵"]);
   static const RoomDetailData secondRoom = RoomDetailData(
       title: "2の部屋",
       imgPath: "assets/images/background/2ndStage_background.png",
       hints: [
+        "13文字アルファベットがズレているのかも",
         "生物図鑑の後ろになにかがある...?",
-        "何文字化かアルファベットがズレているのかも",
         "答え:まさんば、とまとまと、きんのみ"
       ]);
   static const RoomDetailData thirdRoom = RoomDetailData(
@@ -42,7 +42,7 @@ class RoomData {
       hints: []);
   static const RoomDetailData endingRoom = RoomDetailData(
       title: "5の部屋",
-      imgPath: "assets/images/background4thStage_background.png",
+      imgPath: "assets/images/background/tutorial_background.png",
       hints: ["B=2"]);
 
   static RoomDetailData? roomData(int room) {

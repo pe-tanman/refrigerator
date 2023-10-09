@@ -9,7 +9,7 @@ class EndingScreenArguments {
 }
 
 class EndingScreen extends StatefulWidget {
-  EndingScreen({Key? key}) : super(key: key);
+  const EndingScreen({Key? key}) : super(key: key);
   static const routeName = "/ending-screen";
   @override
   State<EndingScreen> createState() => _EndingScreenState();
@@ -21,10 +21,6 @@ class _EndingScreenState extends State<EndingScreen> {
   bool videoEnded = false;
   String decision = "a";
   bool isInit = true;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void checkVideo() {
     if (_controller.value.position == _controller.value.duration) {
@@ -41,8 +37,7 @@ class _EndingScreenState extends State<EndingScreen> {
           (ModalRoute.of(context)!.settings.arguments as EndingScreenArguments)
               .decision;
       if (decision == "a") {
-        _controller = VideoPlayerController.networkUrl(Uri.parse(
-            "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"))
+        _controller = VideoPlayerController.asset("assets/ending_a.mp4")
           ..initialize().then((_) {
             _controller.play();
             // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -50,8 +45,7 @@ class _EndingScreenState extends State<EndingScreen> {
           });
         _controller.addListener(checkVideo);
       } else {
-        _controller = VideoPlayerController.networkUrl(Uri.parse(
-            "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"))
+        _controller = VideoPlayerController.asset("assets/ending_b.mp4")
           ..initialize().then((_) {
             _controller.play();
             // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -65,7 +59,7 @@ class _EndingScreenState extends State<EndingScreen> {
     return Scaffold(
       appBar: (videoEnded)
           ? AppBar(
-              title: const Text("エンディング"),
+              title: const Text("ありがとうございました"),
             )
           : null,
       drawer: const EndingDrawer(),

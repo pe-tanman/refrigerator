@@ -44,7 +44,7 @@ class Ingredient {
         ref.read(completeObjectInventoryProvider);
     if ((ans == null || ans == password) &&
         !completeObjectInventory.contains(this) &&
-        completeObjectInventory.length <= 5) {
+        completeObjectInventory.length <= 3) {
       completeWidgetInventory.insert(
           completeObjectInventory.length,
           Container(

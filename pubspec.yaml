@@ -42,6 +42,7 @@ dependencies:
   flutter_riverpod: ^2.3.6
   video_player: ^2.7.1
   freezed_annotation: ^2.2.0
+  audioplayers: ^5.1.0
 
 
 
@@ -88,16 +89,11 @@ flutter:
   fonts:
     - family: NotoSansJP
       fonts:
-        - asset: assets/fonts/NotoSansJP-Light.ttf
-          weight: 300
         - asset: assets/fonts/NotoSansJP-Regular.ttf
           weight: 400
-        - asset: assets/fonts/NotoSansJP-Medium.ttf
-          weight: 500
         - asset: assets/fonts/NotoSansJP-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/NotoSansJP-Black.ttf
-          weight: 900
+          weight: 600
+
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

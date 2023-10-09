@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:refrigerator/screens/start_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -13,6 +14,10 @@ class MainDrawer extends StatelessWidget {
           "207\n民と雪の女王",
           style: TextStyle(color: Colors.white, fontSize: 25),
         ),
+      ),
+      ListTile(
+        title: const Text("初期化", style: TextStyle(fontSize: 20)),
+        onTap: () => Navigator.of(context).pushNamed(StartScreen.routeName),
       ),
       Container(
         alignment: Alignment.bottomCenter,

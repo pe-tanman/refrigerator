@@ -16,10 +16,10 @@ class MainAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
 
 class _MainAppbarState extends ConsumerState<MainAppbar> {
   int room = 0;
-  String time = "2:00";
+  String time = "1:00";
   int startMin = 2;
-  int min = 1;
-  int sec = 59;
+  int min = 0;
+  int sec = 0;
   List<Widget> hintWidgets = [];
   List<String> hints = [];
   bool hintAvailable = false;
@@ -75,28 +75,25 @@ class _MainAppbarState extends ConsumerState<MainAppbar> {
   }
 
   Future startTimer() async {
-    min = 1;
-    sec = 59;
-    setState(() {});
+    setState(() {
+      min = 1;
+      sec = 59;
+    });
   }
 
   Future runTimer() async {
-    if (room != 0 && room != 4) {
-      for (int i = 1; i <= hints.length; i++) {
-        for (min = startMin - 1; min >= 0; min--) {
-          for (sec = 59; sec >= 0; sec--) {
-            await Future.delayed(const Duration(seconds: 1));
-            if (mounted) {
-              setState(() {
-                time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
-              });
-            } else {
-              return;
-            }
+    for (int i = 1; i <= hints.length; i++) {
+      for (min = startMin - 1; min >= 0; min--) {
+        for (sec = 59; sec >= 0; sec--) {
+          await Future.delayed(const Duration(seconds: 1));
+          if (mounted) {
+            setState(() {
+              time = (sec >= 10) ? "$min:$sec" : "$min:0$sec";
+            });
           }
         }
-        addHint(i);
       }
+      addHint(i);
     }
   }
 
@@ -116,16 +113,25 @@ class _MainAppbarState extends ConsumerState<MainAppbar> {
     ref.listen<int>(
       roomProvider, // 購読対象のProviderを指定
       (previous, next) {
-        startTimer();
         Future.delayed(Duration.zero, () {
-          hints = RoomData.roomData(ref.watch(roomProvider))!.hints;
+          hints = RoomData.roomData(next)!.hints;
           hintWidgets.clear();
-          if (isInit) {
+          print(hints);
+          if (next == 4 || next == 6) {
+            print("off timer");
+            min = 0;
+            sec = 0;
+            setState(() {});
+          } else if (min == 0 && sec == 0) {
+            startTimer();
+            print("run timer");
             runTimer();
-            isInit = false;
+          } else {
+            startTimer();
+            print("restart timer");
           }
-          setState(() {});
         });
+        //off timer
       },
     );
     return AppBar(

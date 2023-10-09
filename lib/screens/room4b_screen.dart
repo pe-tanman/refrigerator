@@ -16,7 +16,7 @@ class Room4bScreen extends ConsumerStatefulWidget {
 
 class _Room4bScreenState extends ConsumerState<Room4bScreen> {
   int room = 5;
-  String questionImgPath = "assets/images/question.jpg";
+  String questionImgPath = "assets/images/question.png";
 
   void showFinishedDialog() {
     showDialog(
@@ -25,6 +25,7 @@ class _Room4bScreenState extends ConsumerState<Room4bScreen> {
           return AlertDialog(
             title: const Text("確認"),
             content: const Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text("南京錠を開けて次の部屋に進んでください"),
                 Text(
@@ -37,6 +38,7 @@ class _Room4bScreenState extends ConsumerState<Room4bScreen> {
               TextButton(
                 child: const Text("OK"),
                 onPressed: () {
+                  ref.read(roomProvider.notifier).increment();
                   Navigator.of(context).pushNamed(QuitScreen.routeName);
                 },
               )
@@ -53,28 +55,26 @@ class _Room4bScreenState extends ConsumerState<Room4bScreen> {
     return Scaffold(
       appBar: const MainAppbar(),
       drawer: const MainDrawer(),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(RoomData.roomData(4)!.imgPath),
-              fit: BoxFit.cover),
-        ),
-        child: Column(
-          children: [
-            Container(
-                width: 800,
-                height: 600,
-                decoration: BoxDecoration(
-                    image:
-                        DecorationImage(image: AssetImage(questionImgPath)))),
-            const SizedBox(height: 50),
-            ElevatedButton(
-              child: const Text("解き終わった"),
-              onPressed: () {
-                showFinishedDialog();
-              },
-            )
-          ],
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(RoomData.roomData(4)!.imgPath),
+                fit: BoxFit.cover),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 50),
+              ElevatedButton(
+                child: const Text("解き終わった"),
+                onPressed: () {
+                  showFinishedDialog();
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
